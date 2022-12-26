@@ -96,6 +96,24 @@ def language(chunk=None, lang=None, update=None):
 			"deutsch": "Vielen Dank für Ihre Zeit!"
 		},
 
+		"adminPass": {
+			"english": "password",
+			"deutsch": "Kennwort"
+		},
+		"buttonExport": {
+			"english": "export",
+			"deutsch": "exportieren"
+		},
+		"buttonReset": {
+			"english": "reset",
+			"deutsch": "zurücksetzen"
+		},
+		"devInfo": {
+			"english": "customer survey by error on line 1 (erroronline.one)\n\nvisit the open source code on github.com/erroronline1/customersurvey.py",
+			"deutsch": "Kundenumfrage von error on line 1 (erroronline.one)\n\nBesuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py"
+		},
+
+
 	}
 	if chunk and chunk not in element:
 		return "This content snippet has not been declared yet"

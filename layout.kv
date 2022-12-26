@@ -38,7 +38,6 @@
 	size_hint: None, 1
 	width: "256sp"
 	pos_hint: {'center': (.5, .5)}
-	halign: "center"
 
 <IconListItem>
     IconLeftWidget:
@@ -62,28 +61,43 @@
 <MDNavigationLayout>
 	size_hint:1,.9
 
+<ContentNavigationDrawer>
+	MDList:
+		size_hint: 1,1
+		OneLineListItem:
+			id: menuFeedback
+			text: app.content("menuFeedback")
+			on_press:
+				root.nav_drawer.set_state("close")
+				root.screen_manager.current = "feedbackScreen"
+		OneLineListItem:
+			id: menuEvaluate
+			text: app.content("menuEvaluate")
+			on_press:
+				root.nav_drawer.set_state("close")
+				root.screen_manager.current = "evaluateScreen"
+
 MDScreen:
 	MDTopAppBar:
-		#title: app.content("menuFeedback")
 		elevation: 0
 		pos_hint: {"top": 1}
 		left_action_items:
 			[['menu', lambda x: nav_drawer.set_state("open")]]
 		right_action_items:
-			[['arrow-up-drop-circle-outline', lambda x: app.screen.ids["carousel"].load_previous()],['arrow-down-drop-circle-outline', lambda x: app.screen.ids["carousel"].load_next()]]
+			[['arrow-up-drop-circle-outline', lambda x: carousel.load_previous()],['arrow-down-drop-circle-outline', lambda x: carousel.load_next()]]
 
 	MDNavigationLayout:
 		MDScreenManager:
 			id: screen_manager
 			MDScreen:
-				name: "ratingScreen"
+				name: "feedbackScreen"
 				MDProgressBar:
 					id: progressBar
 					color: app.theme_cls.accent_color
 				MDCarousel:
 					id: carousel
 					direction: 'bottom'
-					on_slide_complete: app.screen.ids["progressBar"].value = 100 / (len(self.slides) - 1) * self.slides.index(self.current_slide)
+					on_slide_complete: progressBar.value = 100 / (len(self.slides) - 1) * self.slides.index(self.current_slide)
 
 					# general
 					ScreenLayout:
@@ -93,15 +107,15 @@ MDScreen:
 						IconButton:
 							icon: "emoticon-happy-outline"
 							icon_color: (0,.5,0,1)
-							on_release: app.screen.ids["carousel"].load_next()
+							on_release: carousel.load_next()
 						IconButton:
 							icon: "emoticon-neutral-outline"
 							icon_color: (1,.64,0,1)
-							on_release: app.screen.ids["carousel"].load_next()
+							on_release: carousel.load_next()
 						IconButton:
 							icon: "emoticon-sad-outline"
 							icon_color: (1,0,0,1)
-							on_release: app.screen.ids["carousel"].load_next()
+							on_release: carousel.load_next()
 						Dropdown:
 							id: languageSelection
 							text: app.selectedLanguage
@@ -116,19 +130,16 @@ MDScreen:
 							MDLabel:
 								id: encouragementText
 								text: app.content("encouragementText")
-								#size_hint_y: None
-								#text_size: self.width, None
-								#height: self.texture_size[1]
 						MDFillRoundFlatIconButton:
 							id: encouragementYes
 							icon: "thumb-up-outline"
 							text: app.content("encouragementYes")
-							on_release: app.screen.ids["carousel"].load_next()
+							on_release: carousel.load_next()
 						MDFillRoundFlatIconButton:
 							id: encouragementNo
 							icon: "exit-to-app"
 							text: app.content("encouragementNo")
-							on_release: app.screen.ids["carousel"].load_slide(app.screen.ids["carousel"].slides[len(app.screen.ids["carousel"].slides)-1])
+							on_release: carousel.load_slide(carousel.slides[len(carousel.slides)-1])
 					# 4 more specific questions
 					ScreenLayout:
 						TopLabel:
@@ -202,23 +213,35 @@ MDScreen:
 						IconButton:
 							icon: "heart"
 							icon_color: (.97, .65, .97, 1)
+			MDScreen:
+				name: "evaluateScreen"
+				ScreenLayout:
+					MDTextField:
+						id: adminPass
+						hint_text: app.content("adminPass")
+						password: True
+					MDFillRoundFlatIconButton:
+						id: buttonExport
+						icon: "database-export-outline"
+						text: app.content("buttonExport")
+						disabled: adminPass.text != app.adminPass
+						on_release: pass
+						on_release: adminPass.text = ""
+					MDFillRoundFlatIconButton:
+						id: buttonReset
+						icon: "delete-forever-outline"
+						text: app.content("buttonReset")
+						disabled: adminPass.text != app.adminPass
+						on_release: pass
+						on_release: adminPass.text = ""
+					MDScrollView:
+						MDLabel:
+							id: devInfo
+							text: app.content("devInfo")
+
         MDNavigationDrawer:
             id: nav_drawer
             radius: (0, 16, 16, 0)
-            MDBoxLayout:
+            ContentNavigationDrawer:
                 screen_manager: screen_manager
                 nav_drawer: nav_drawer
-				MDList:
-					size_hint: 1,1
-					OneLineListItem:
-						id: menuFeedback
-						text: app.content("menuFeedback")
-						on_press:
-							root.nav_drawer.set_state("close")
-							root.screen_manager.current = "ratingScreen"
-					OneLineListItem:
-						id: menuEvaluate
-						text: app.content("menuEvaluate")
-						on_press:
-							root.nav_drawer.set_state("close")
-							root.screen_manager.current = "scr 2"

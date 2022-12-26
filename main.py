@@ -3,12 +3,11 @@ __version__ = "0.1"
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.metrics import dp
+from kivy.properties import StringProperty, ObjectProperty
 
-from kivy.properties import StringProperty
 from kivymd.uix.menu import MDDropdownMenu
-
 from kivymd.uix.list import OneLineIconListItem
-from kivymd.app import MDApp
+from kivymd.uix.boxlayout import MDBoxLayout
 
 from lang import language
 
@@ -26,10 +25,15 @@ admin export/reset
 class IconListItem(OneLineIconListItem):
 	icon = StringProperty()
 
+class ContentNavigationDrawer(MDBoxLayout):
+    screen_manager = ObjectProperty()
+    nav_drawer = ObjectProperty()
+
 class CustomersurveyApp(MDApp): # <- main class
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.selectedLanguage = "deutsch"
+		self.adminPass = "wunschkonzert"
 		self.theme_cls.theme_style = "Light"
 		self.theme_cls.primary_palette = "Teal"
 		self.screen = Builder.load_file("layout.kv")
