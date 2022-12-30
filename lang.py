@@ -112,6 +112,14 @@ def language(chunk=None, lang=None, update=None):
 			"english": "reset",
 			"deutsch": "zurücksetzen"
 		},
+		"cancelReset":{
+			"english": "ooops, no!",
+			"deutsch": "Hoppla, nein!"
+		},
+		"confirmReset":{
+			"english": "I'm sure",
+			"deutsch": "Ich bin mir sicher"
+		},
 		"devInfo": {
 			"english": '''customer survey by error on line 1 (erroronline.one)
 
@@ -125,6 +133,10 @@ Besuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py'''
 		"initMessage": {
 			"english": "database initialized...",
 			"deutsch": "Datenbank initialisiert..."
+		},
+		"resetMessage": {
+			"english": "please restart app...",
+			"deutsch": "App bitte neu starten..."
 		},
 
 	}

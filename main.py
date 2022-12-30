@@ -9,6 +9,8 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.snackbar import Snackbar
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 from kivy.clock import Clock
 
 from lang import language
@@ -20,26 +22,26 @@ from kivy.core.window import Window
 todo
 
 timeout
-sql lite
-admin export/reset
+admin export
 '''
 
 class IconListItem(OneLineIconListItem):
 	icon = StringProperty()
 
 class ContentNavigationDrawer(MDBoxLayout):
-    screen_manager = ObjectProperty()
-    nav_drawer = ObjectProperty()
+	screen_manager = ObjectProperty()
+	nav_drawer = ObjectProperty()
 
 class CustomersurveyApp(MDApp): # <- main class
+	dialog = None
+
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.selectedLanguage = "deutsch"
 		self.theme_cls.theme_style = "Light"
 		self.theme_cls.primary_palette = "Teal"
+
 		self.database = database.DataBase(self.user_data_dir + "/CustomerSurvey.db")
-		getpwd=self.database.read("SETTING",{"KEY":"Password"})
-		self.adminPass = getpwd[0][1] if getpwd else None
 		self.screen = Builder.load_file("layout.kv")
 
 	def __getitem__(self, x):
@@ -50,8 +52,8 @@ class CustomersurveyApp(MDApp): # <- main class
 		dropdown_options  =self.dropdown_options()
 		self.ratingDropdown = self.dropdown_generator(dropdown_options["rating"])
 		self.languageDropdown = self.dropdown_generator(dropdown_options["language"])
-		if not self.database.initialized:
-			self.notif(self.content("initMessage"),1)
+		if not self.database.password:
+			self.notif(self.content("initMessage"), 1)
 			self.screen.children[0].children[1].current = "evaluateScreen"
 		return self.screen
 
@@ -103,7 +105,7 @@ class CustomersurveyApp(MDApp): # <- main class
 		self.screen.ids[field].text = text
 		self[context][field].dismiss()
 
-	def notif(self, msg = None, delay = None):
+	def notif(self, msg, delay = 0):
 		def sb(this):
 			Snackbar(
 				text = msg,
@@ -114,6 +116,33 @@ class CustomersurveyApp(MDApp): # <- main class
 				) / Window.width
 			).open()
 		Clock.schedule_once(sb, delay)
+
+	def confirm_reset(self):
+		if not self.dialog:
+			self.dialog = MDDialog(
+				text = self.content("buttonReset"),
+				buttons = [
+					MDFlatButton(
+						text = self.content("cancelReset"),
+						on_release = lambda btnObj: self.dialog.dismiss()
+						#theme_text_color="Custom",
+						#text_color=self.theme_cls.primary_color,
+					),
+					MDFlatButton(
+						text = self.content("confirmReset"),
+						on_release = self.reset_confirmed
+						#theme_text_color="Custom",
+						#text_color=self.theme_cls.primary_color,
+					),
+				],
+			)
+		self.dialog.open()
+
+	def reset_confirmed(self, *args):
+		self.dialog.dismiss()
+		self.database.clear(["CS", "SETTING"])
+		self.notif(self.content("resetMessage"))
+
 
 	def content(self, element):
 		return language(element, self.selectedLanguage)
