@@ -219,26 +219,26 @@ MDScreen:
 					MDTextField:
 						id: adminPass
 						hint_text: app.content("adminPass")
-						password: app.database.initialized
+						password: bool(app.database.password)
 					MDFillRoundFlatIconButton:
 						id: buttonPassword
 						icon: "key-variant"
 						text: app.content("buttonPassword")
-						disabled: app.database.initialized
-						on_release: adminPass.text = "" if app.database.write("SETTING", {"KEY": "Password", "VALUE": adminPass.text}) else adminPass.text
+						disabled: bool(app.database.password)
+						on_release: adminPass.text = "" if app.database.write("SETTING", {"KEY": "password", "VALUE": adminPass.text}) else adminPass.text
 					MDFillRoundFlatIconButton:
 						id: buttonExport
 						icon: "database-export-outline"
 						text: app.content("buttonExport")
-						disabled: adminPass.text != app.adminPass
+						disabled: adminPass.text != app.database.password
 						on_release: pass
 						on_release: adminPass.text = ""
 					MDFillRoundFlatIconButton:
 						id: buttonReset
 						icon: "delete-forever-outline"
 						text: app.content("buttonReset")
-						disabled: adminPass.text != app.adminPass
-						on_release: app.database.clear(["CS", "SETTING"])
+						disabled: adminPass.text != app.database.password
+						on_release: app.confirm_reset()
 						on_release: adminPass.text = ""
 					MDScrollView:
 						MDLabel:

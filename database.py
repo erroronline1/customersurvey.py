@@ -1,7 +1,6 @@
 import sqlite3
 
 class DataBase():
-	initialized = False
 	tableFields = {
 		"CS": ["ID", "DATE", "RATING0", "RATING1", "RATING2", "RATING3", "COMMENDATION", "SUGGESTION", "SERVICE"],
 		"SETTING": ["KEY", "VALUE"]
@@ -14,7 +13,8 @@ class DataBase():
 			if not c.fetchone()[0]:
 				self.create()
 			else:
-				self.initialized=bool(self.read("SETTING", {"KEY":"Password"}))
+				getpwd = self.read("SETTING", {"KEY":"password"})
+				self.password = getpwd[0][1] if getpwd else None
 		except Exception as error:
 			pass
 
@@ -78,3 +78,4 @@ class DataBase():
 		for table in tables:
 			self.connection.executescript(f"DELETE FROM {table}; VACUUM;")
 		self.connection.commit()
+		return True
