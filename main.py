@@ -8,9 +8,11 @@ from kivy.properties import StringProperty, ObjectProperty
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineIconListItem
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.snackbar import Snackbar
+from kivy.clock import Clock
 
 from lang import language
-
+import database
 
 from kivy.core.window import Window
 
@@ -33,9 +35,11 @@ class CustomersurveyApp(MDApp): # <- main class
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.selectedLanguage = "deutsch"
-		self.adminPass = "wunschkonzert"
 		self.theme_cls.theme_style = "Light"
 		self.theme_cls.primary_palette = "Teal"
+		self.database = database.DataBase(self.user_data_dir + "/CustomerSurvey.db")
+		getpwd=self.database.read("SETTING",{"KEY":"Password"})
+		self.adminPass = getpwd[0][1] if getpwd else None
 		self.screen = Builder.load_file("layout.kv")
 
 	def __getitem__(self, x):
@@ -46,6 +50,9 @@ class CustomersurveyApp(MDApp): # <- main class
 		dropdown_options  =self.dropdown_options()
 		self.ratingDropdown = self.dropdown_generator(dropdown_options["rating"])
 		self.languageDropdown = self.dropdown_generator(dropdown_options["language"])
+		if not self.database.initialized:
+			self.notif(self.content("initMessage"),1)
+			self.screen.children[0].children[1].current = "evaluateScreen"
 		return self.screen
 
 	def dropdown_options(self):
@@ -95,6 +102,18 @@ class CustomersurveyApp(MDApp): # <- main class
 	def select_dropdown_item(self, field, text, context):
 		self.screen.ids[field].text = text
 		self[context][field].dismiss()
+
+	def notif(self, msg = None, delay = None):
+		def sb(this):
+			Snackbar(
+				text = msg,
+				snackbar_x = "10dp",
+				snackbar_y = "10dp",
+				size_hint_x = (
+					Window.width - (dp(10) * 2)
+				) / Window.width
+			).open()
+		Clock.schedule_once(sb, delay)
 
 	def content(self, element):
 		return language(element, self.selectedLanguage)

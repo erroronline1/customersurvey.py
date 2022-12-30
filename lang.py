@@ -100,6 +100,10 @@ def language(chunk=None, lang=None, update=None):
 			"english": "password",
 			"deutsch": "Kennwort"
 		},
+		"buttonPassword": {
+			"english": "set password",
+			"deutsch": "Kennwort festlegen"
+		},
 		"buttonExport": {
 			"english": "export",
 			"deutsch": "exportieren"
@@ -109,10 +113,19 @@ def language(chunk=None, lang=None, update=None):
 			"deutsch": "zurücksetzen"
 		},
 		"devInfo": {
-			"english": "customer survey by error on line 1 (erroronline.one)\n\nvisit the open source code on github.com/erroronline1/customersurvey.py",
-			"deutsch": "Kundenumfrage von error on line 1 (erroronline.one)\n\nBesuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py"
+			"english": '''customer survey by error on line 1 (erroronline.one)
+
+server- and cloudless, privacy oriented solution.
+visit the open source code on github.com/erroronline1/customersurvey.py''',
+			"deutsch": '''Kundenumfrage von error on line 1 (erroronline.one)
+server- und cloudlos, datenschutzorientierte Lösung.
+Besuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py'''
 		},
 
+		"initMessage": {
+			"english": "database initialized...",
+			"deutsch": "Datenbank initialisiert..."
+		},
 
 	}
 	if chunk and chunk not in element:

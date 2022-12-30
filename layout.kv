@@ -219,7 +219,13 @@ MDScreen:
 					MDTextField:
 						id: adminPass
 						hint_text: app.content("adminPass")
-						password: True
+						password: app.database.initialized
+					MDFillRoundFlatIconButton:
+						id: buttonPassword
+						icon: "key-variant"
+						text: app.content("buttonPassword")
+						disabled: app.database.initialized
+						on_release: adminPass.text = "" if app.database.write("SETTING", {"KEY": "Password", "VALUE": adminPass.text}) else adminPass.text
 					MDFillRoundFlatIconButton:
 						id: buttonExport
 						icon: "database-export-outline"
@@ -232,7 +238,7 @@ MDScreen:
 						icon: "delete-forever-outline"
 						text: app.content("buttonReset")
 						disabled: adminPass.text != app.adminPass
-						on_release: pass
+						on_release: app.database.clear(["CS", "SETTING"])
 						on_release: adminPass.text = ""
 					MDScrollView:
 						MDLabel:
