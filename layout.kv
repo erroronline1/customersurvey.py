@@ -98,7 +98,7 @@ MDScreen:
 					id: carousel
 					direction: 'bottom'
 					on_slide_complete: progressBar.value = 100 / (len(self.slides) - 1) * self.slides.index(self.current_slide)
-
+					on_slide_complete: app.save_inputs()
 					# general
 					ScreenLayout:
 						TopLabel:
@@ -107,14 +107,17 @@ MDScreen:
 						IconButton:
 							icon: "emoticon-happy-outline"
 							icon_color: (0,.5,0,1)
+							on_release: app.initialRating = 2
 							on_release: carousel.load_next()
 						IconButton:
 							icon: "emoticon-neutral-outline"
 							icon_color: (1,.64,0,1)
+							on_release: app.initialRating = 1
 							on_release: carousel.load_next()
 						IconButton:
 							icon: "emoticon-sad-outline"
 							icon_color: (1,0,0,1)
+							on_release: app.initialRating = 0
 							on_release: carousel.load_next()
 						Dropdown:
 							id: languageSelection
@@ -226,19 +229,20 @@ MDScreen:
 						text: app.content("buttonPassword")
 						disabled: bool(app.database.password)
 						on_release: adminPass.text = "" if app.database.write("SETTING", {"KEY": "password", "VALUE": adminPass.text}) else adminPass.text
+						on_release: app.notif(app.content("resetMessage"))
 					MDFillRoundFlatIconButton:
 						id: buttonExport
 						icon: "database-export-outline"
 						text: app.content("buttonExport")
-						disabled: adminPass.text != app.database.password
+						disabled: adminPass.text != app.database.password or not app.database.password
 						on_release: pass
 						on_release: adminPass.text = ""
 					MDFillRoundFlatIconButton:
 						id: buttonReset
 						icon: "delete-forever-outline"
 						text: app.content("buttonReset")
-						disabled: adminPass.text != app.database.password
-						on_release: app.confirm_reset()
+						disabled: adminPass.text != app.database.password or not app.database.password
+						on_release: app.cancel_confirm_dialog(app.content("buttonReset"), app.content("cancelReset"), app.content("confirmReset"))
 						on_release: adminPass.text = ""
 					MDScrollView:
 						MDLabel:

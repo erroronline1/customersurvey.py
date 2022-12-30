@@ -16,6 +16,11 @@ def language(chunk=None, lang=None, update=None):
 			"deutsch": "Wie zufrieden sind Sie mit uns?"
 		},
 
+		"missingRateNotif":{
+			"english": "Please provide you general opinion :)",
+			"deutsch": "Bitte geben Sie ihren Gesamteindruck an :)"
+		},
+
 		"encouragementLabel": {
 			"english": "Thank you for your opinion!",
 			"deutsch": "Danke für Ihre Meinung!"

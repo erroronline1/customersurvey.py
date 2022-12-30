@@ -18,6 +18,8 @@ import database
 
 from kivy.core.window import Window
 
+from datetime import datetime
+
 '''
 todo
 
@@ -33,11 +35,13 @@ class ContentNavigationDrawer(MDBoxLayout):
 	nav_drawer = ObjectProperty()
 
 class CustomersurveyApp(MDApp): # <- main class
+	selectedLanguage = "deutsch"
 	dialog = None
+	session = "NULL" # according to database id to assign inputs to a row
+	initialRating = None
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
-		self.selectedLanguage = "deutsch"
 		self.theme_cls.theme_style = "Light"
 		self.theme_cls.primary_palette = "Teal"
 
@@ -49,7 +53,7 @@ class CustomersurveyApp(MDApp): # <- main class
 
 	def build(self):
 		Window.size = (400, 666) #1200x2000 samsung galaxy tab a7
-		dropdown_options  =self.dropdown_options()
+		dropdown_options = self.dropdown_options()
 		self.ratingDropdown = self.dropdown_generator(dropdown_options["rating"])
 		self.languageDropdown = self.dropdown_generator(dropdown_options["language"])
 		if not self.database.password:
@@ -84,7 +88,7 @@ class CustomersurveyApp(MDApp): # <- main class
 		items = [
 			{
 				"text": self.content(i["content"]) if "content" in i else i["option"],
-				"content":i["content"] if "content" in i else None,
+				"content": i["content"] if "content" in i else None,
 				"height": dp(64),
 				"viewclass": "IconListItem" if "icon" in i else None,
 				"icon": i["icon"] if "icon" in i else None,
@@ -140,7 +144,6 @@ class CustomersurveyApp(MDApp): # <- main class
 			self.database.clear(["CS", "SETTING"])
 			self.notif(self.content("resetMessage"))
 
-
 	def content(self, element):
 		return language(element, self.selectedLanguage)
 
@@ -163,6 +166,27 @@ class CustomersurveyApp(MDApp): # <- main class
 				**{"text":allElements[item["content"]][lang]} if item["content"] else {},
 				**{"on_release": lambda x = (field, allElements[item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
 				) for item in self.ratingDropdown[field].items]
+
+	def save_inputs(self):
+		if self.initialRating is not None:
+			# process all possible fields. slidewise is unreliable and skips occasionally
+			now = datetime.now()
+			key_value = {
+				"ID": self.session,
+				"DATE": now.strftime("%Y-%m-%d"),
+				"RATING": self.initialRating,
+				"COMMENDATION": self.screen.ids["commendation"].text if self.screen.ids["commendation"].text else "NULL",
+				"SUGGESTION": self.screen.ids["suggestion"].text if self.screen.ids["suggestion"].text else "NULL",
+				"SERVICE": self.screen.ids["service"].text if self.screen.ids["service"].text else "NULL"
+				}
+			dropdown_options = self.dropdown_options()
+			grades = [self.content("detailratingBad"), self.content("detailratingMeh"), self.content("detailratingGood")]
+			for i, field in enumerate(dropdown_options["rating"]["fields"]):
+				if self.screen.ids[field].text in grades:
+					key_value[f'RATING{i}'] = grades.index(self.screen.ids[field].text)
+			self.session = self.database.write("CS", key_value, {"ID": self.session})
+		else:
+			self.notif(self.content("missingRateNotif"))
 
 	def on_stop(self):
 		#without this, app will not exit even if the window is closed
