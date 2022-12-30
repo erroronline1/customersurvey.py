@@ -117,31 +117,28 @@ class CustomersurveyApp(MDApp): # <- main class
 			).open()
 		Clock.schedule_once(sb, delay)
 
-	def confirm_reset(self):
+	def cancel_confirm_dialog(self, decision, cancel, confirm):
 		if not self.dialog:
 			self.dialog = MDDialog(
-				text = self.content("buttonReset"),
+				text = decision,
 				buttons = [
 					MDFlatButton(
-						text = self.content("cancelReset"),
-						on_release = lambda btnObj: self.dialog.dismiss()
-						#theme_text_color="Custom",
-						#text_color=self.theme_cls.primary_color,
+						text = cancel,
+						on_release = self.cancel_confirm_dialog_handler
 					),
 					MDFlatButton(
-						text = self.content("confirmReset"),
-						on_release = self.reset_confirmed
-						#theme_text_color="Custom",
-						#text_color=self.theme_cls.primary_color,
+						text = confirm,
+						on_release = self.cancel_confirm_dialog_handler
 					),
 				],
 			)
 		self.dialog.open()
 
-	def reset_confirmed(self, *args):
+	def cancel_confirm_dialog_handler(self, *btnObj):
 		self.dialog.dismiss()
-		self.database.clear(["CS", "SETTING"])
-		self.notif(self.content("resetMessage"))
+		if btnObj[0].text == self.content("confirmReset"):
+			self.database.clear(["CS", "SETTING"])
+			self.notif(self.content("resetMessage"))
 
 
 	def content(self, element):
