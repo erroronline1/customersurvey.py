@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # user interface and default values
 
 def language(chunk=None, lang=None, update=None):
@@ -144,6 +145,30 @@ Besuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py'''
 			"deutsch": "App bitte neu starten..."
 		},
 
+		"rtfHead":{
+			"english": ["Customer Survey Report based on disclosures from", "until"],
+			"deutsch": ["Kundenzufriedenheitsanalyse basierend auf den Angaben von", "bis"]
+		},
+		"rtfTotal":{
+			"english": ["Total Rating", "From", "until", "", "general votes result in a satisfaction rate of"],
+			"deutsch": ["Gesamteinschätzung", "Von", "bis", "ergeben", " allgemeine Bewertungen eine Zufriedenheit von"]
+		},
+		"rtfDetail":{
+			"english": ["Regarding", "From", "until", "", "votes result in a satisfaction rate of", "has not been answered yet"],
+			"deutsch": ["In der Fragestellung", "Von", "bis", "ergeben", "allgemeine Bewertungen eine Zufriedenheit von", "wurde noch nicht beantwortet"]
+		},
+		"rtfTextInput":{
+			"english": ["Commendations and suggestions", "general rating", "have not been provided yet"],
+			"deutsch": ["Lob und Vorschläge", "allgemeine Bewertung", "sind noch nicht abgegeben worden"]
+		},
+		"rtfFail":{
+			"english": "Report could not be generated",
+			"deutsch": "Analyse konnte nicht erstellt werden."
+		},
+		"rtfSuccess":{
+			"english": "Report saved as",
+			"deutsch": "Analyse gespeichert unter"
+		},
 	}
 	if chunk and chunk not in element:
 		return "This content snippet has not been declared yet"

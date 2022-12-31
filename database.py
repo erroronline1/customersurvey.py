@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import sqlite3
+from lang import language
 
 class DataBase():
 	tableFields = {
@@ -88,3 +90,61 @@ class DataBase():
 			self.connection.executescript(f"DELETE FROM {table}; VACUUM;")
 		self.connection.commit()
 		return True
+
+	def rtf(self, l, file):
+		rtfHead = language("rtfHead", l)
+		rtfTotal = language("rtfTotal", l)
+		rtfDetail = language("rtfDetail", l)
+		rtfTextInput = language("rtfTextInput", l)
+		rtfCommendation = language("commendationLabel", l)
+		rtfSuggestion = language("suggestionLabel", l)
+
+		output = "{\\rtf1 \\ansi\\ansicpg1252\\deff0\\nouicompat "
+
+		# total and main review
+		cursor = self.connection.cursor()
+		cursor.execute("SELECT MIN(DATE) AS zero, MAX(DATE) AS one, COUNT(ID) AS two, AVG(RATING) AS three FROM CS;")
+		result = cursor.fetchall()
+		if result is None:
+			return False
+		result = result[0]
+		
+		output += f"{{\\b {rtfHead[0]} {result[0]} {rtfHead[1]} {result[1]}}} \par "
+		output += f"{{\\b {rtfTotal[0]}:}} "
+		output += f"\line {rtfTotal[1]} {result[0]} {rtfTotal[2]} {result[1]} {rtfTotal[3]} {result[2]} {rtfTotal[4]} {round(result[3]*50, 2)} % "
+		
+		# topic related statistics
+		details = [language("detailratingAvailability" ,l), language("detailratingProcessing" ,l), language("detailratingExpertise" ,l), language("detailratingKindness" ,l)]
+		for i, detail in enumerate(details):
+			cursor.execute(f"SELECT MIN(DATE) AS zero, MAX(DATE) AS one, COUNT(ID) AS two, AVG(RATING{i}) AS three FROM CS WHERE RATING{i} IS NOT NULL;")
+			result = cursor.fetchall()
+			if result is None:
+				output += f"\par {{\i {detail}}} {rtfDetail[5]} \line "
+				continue
+			result = result[0]
+			output += f"\par {rtfDetail[0]} {{\i {detail}}} "
+			output += f"\line {rtfDetail[1]} {result[0]} {rtfDetail[2]} {result[1]} {rtfDetail[3]} {result[2]} {rtfDetail[4]} {round(result[3]*50, 2)} % "
+
+		# customer text inputs
+		rating = [language("detailratingBad" ,l), language("detailratingMeh" ,l), language("detailratingGood" ,l)]
+		output += f"\par \line {{\\b {rtfTextInput[0]}}} "
+		cursor.execute("SELECT * FROM CS WHERE COMMENDATION IS NOT NULL OR SUGGESTION IS NOT NULL OR SERVICE IS NOT NULL;")
+		result = cursor.fetchall()
+		if result is None:
+			output += f"{rtfTextInput[2]}"
+		else:
+			for r in result:
+				output += f"\par \line {{\\b {r[1]}}} {r[9]} \line "
+				output += f"{{\i {rtfCommendation}:}} {r[7]} \line " if r[7] != None else ""
+				output += f"{{\i {rtfSuggestion}:}} {r[8]} \line " if r[8] != None else ""
+				for i, detail in enumerate(details):
+					output += f"{detail}: {rating[r[3+i]]} / " if r[3+i] != None else ""
+				output += f"{rtfTextInput[1]}: {rating[r[2]]} "
+		
+		output +="}"
+		try:
+			with open(file, 'w', newline = '', encoding = 'utf8') as rtfFile:
+				rtfFile.write(output)
+			return True
+		except Exception as error:
+			return False

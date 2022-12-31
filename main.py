@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __version__ = "0.1"
 
 from kivymd.app import MDApp
@@ -24,7 +25,9 @@ from datetime import datetime
 todo
 
 timeout
-admin export
+export character encoding
+storing selected language in settings
+
 '''
 
 class IconListItem(OneLineIconListItem):
@@ -46,6 +49,7 @@ class CustomersurveyApp(MDApp): # <- main class
 		self.theme_cls.primary_palette = "Teal"
 
 		self.database = database.DataBase(self.user_data_dir + "/CustomerSurvey.db")
+		self.reportFile = self.user_data_dir + "/CustomerSurveyReport.rtf"
 		self.screen = Builder.load_file("layout.kv")
 
 	def __getitem__(self, x):
@@ -187,6 +191,13 @@ class CustomersurveyApp(MDApp): # <- main class
 			self.session = self.database.write("CS", key_value, {"ID": self.session})
 		else:
 			self.notif(self.content("missingRateNotif"))
+
+	def report(self):
+		if not self.database.rtf(self.selectedLanguage, self.reportFile):
+			self.notif(self.content("rtfFail"))
+			return
+		success = self.content("rtfSuccess")
+		self.notif(f"{success} {self.reportFile}")
 
 	def on_stop(self):
 		#without this, app will not exit even if the window is closed

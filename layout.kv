@@ -235,7 +235,7 @@ MDScreen:
 						icon: "database-export-outline"
 						text: app.content("buttonExport")
 						disabled: adminPass.text != app.database.password or not app.database.password
-						on_release: pass
+						on_release: app.report()
 						on_release: adminPass.text = ""
 					MDFillRoundFlatIconButton:
 						id: buttonReset
