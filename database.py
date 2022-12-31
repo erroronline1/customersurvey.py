@@ -16,8 +16,8 @@ class DataBase():
 			if not c.fetchone()[0]:
 				self.create()
 			else:
-				getpwd = self.read("SETTING", {"KEY":"password"})
-				self.password = getpwd[0][1] if getpwd else ''
+				getpwd = self.read(["VALUE"], "SETTING", {"KEY":"password"})
+				self.password = getpwd[0][0] if getpwd else ''
 		except Exception as error:
 			pass
 
@@ -69,12 +69,12 @@ class DataBase():
 				return result[0]
 		return True
 
-	def read(self, table="", where={}, explicit=[]):
-		condition, explicit = [], [self.sanitize(field) for field in explicit] if explicit else "*"
+	def read(self, fields = [], table = "", where = {}):
+		condition, fields = [], [self.sanitize(field, False) for field in fields] if fields else "*"
 		for key in where:
 			condition.append(f"{self.sanitize(key, False)}={self.sanitize(where[key])}")
 		cursor = self.connection.cursor()
-		cursor.execute(f"SELECT {' AND '.join(explicit)} FROM {table} WHERE {' AND '.join(condition)};")
+		cursor.execute(f"SELECT {' AND '.join(fields)} FROM {table} WHERE {' AND '.join(condition)};")
 		result = cursor.fetchall()
 		if result is not None:
 			return result
