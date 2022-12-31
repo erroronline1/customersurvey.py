@@ -24,9 +24,9 @@ from datetime import datetime
 '''
 todo
 
-timeout
+timeout / restart
 export character encoding
-storing selected language in settings
+configurable margins (admin slides?)
 
 '''
 
@@ -38,7 +38,6 @@ class ContentNavigationDrawer(MDBoxLayout):
 	nav_drawer = ObjectProperty()
 
 class CustomersurveyApp(MDApp): # <- main class
-	selectedLanguage = "deutsch"
 	dialog = None
 	session = "NULL" # according to database id to assign inputs to a row
 	initialRating = None
@@ -50,6 +49,10 @@ class CustomersurveyApp(MDApp): # <- main class
 
 		self.database = database.DataBase(self.user_data_dir + "/CustomerSurvey.db")
 		self.reportFile = self.user_data_dir + "/CustomerSurveyReport.rtf"
+
+		lang = self.database.read(["VALUE"], "SETTING", {"KEY":"language"})
+		self.selectedLanguage = lang[0][0] if lang else "english"
+
 		self.screen = Builder.load_file("layout.kv")
 
 	def __getitem__(self, x):
@@ -154,6 +157,7 @@ class CustomersurveyApp(MDApp): # <- main class
 	def translate(self, lang):
 		allElements = language(None, None, True)
 		self.selectedLanguage = lang 
+		self.database.write("SETTING", {"KEY":"language", "VALUE":lang}, {"KEY":"language"})
 		for element in allElements:
 			try:
 				# not all language chunks have their respective id'd counterparts like
