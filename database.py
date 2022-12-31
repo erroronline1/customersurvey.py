@@ -111,7 +111,7 @@ class DataBase():
 		
 		output += f"{{\\b {rtfHead[0]} {result[0]} {rtfHead[1]} {result[1]}}} \par "
 		output += f"{{\\b {rtfTotal[0]}:}} "
-		output += f"\line {rtfTotal[1]} {result[0]} {rtfTotal[2]} {result[1]} {rtfTotal[3]} {result[2]} {rtfTotal[4]} {round(result[3]*50, 2)} % "
+		output += f"\line {rtfTotal[1]} {result[0]} {rtfTotal[2]} {result[1]} {rtfTotal[3]} {result[2]} {rtfTotal[4]} {round(result[3]*50, 2)} % \par "
 		
 		# topic related statistics
 		details = [language("detailratingAvailability" ,l), language("detailratingProcessing" ,l), language("detailratingExpertise" ,l), language("detailratingKindness" ,l)]
@@ -134,7 +134,7 @@ class DataBase():
 			output += f"{rtfTextInput[2]}"
 		else:
 			for r in result:
-				output += f"\par \line {{\\b {r[1]}}} {r[9]} \line "
+				output += f"\par \line {{\\b {r[1]}}} {r[9] if r[9] else ''} \line "
 				output += f"{{\i {rtfCommendation}:}} {r[7]} \line " if r[7] != None else ""
 				output += f"{{\i {rtfSuggestion}:}} {r[8]} \line " if r[8] != None else ""
 				for i, detail in enumerate(details):
@@ -143,7 +143,7 @@ class DataBase():
 		
 		output +="}"
 		try:
-			with open(file, 'w', newline = '', encoding = 'utf8') as rtfFile:
+			with open(file, 'w', newline = '') as rtfFile:
 				rtfFile.write(output)
 			return True
 		except Exception as error:
