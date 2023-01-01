@@ -101,6 +101,10 @@ def language(chunk=None, lang=None, update=None):
 			"english": "Thank you for your time!",
 			"deutsch": "Vielen Dank für Ihre Zeit!"
 		},
+		"thankyouRestart": {
+			"english": "restart",
+			"deutsch": "von vorne"
+		},
 
 		"adminPass": {
 			"english": "password",

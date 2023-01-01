@@ -24,9 +24,8 @@ from datetime import datetime
 '''
 todo
 
-timeout / restart
-export character encoding
-configurable margins (admin slides?)
+configurable margins? (admin slides?)
+define questions for being compiled?
 
 '''
 
@@ -41,6 +40,8 @@ class CustomersurveyApp(MDApp): # <- main class
 	dialog = None
 	session = "NULL" # according to database id to assign inputs to a row
 	initialRating = None
+	timeout = None
+	timeoutSeconds = 30
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -65,7 +66,7 @@ class CustomersurveyApp(MDApp): # <- main class
 		self.languageDropdown = self.dropdown_generator(dropdown_options["language"])
 		if not self.database.password:
 			self.notif(self.content("initMessage"), 1)
-			self.screen.children[0].children[1].current = "evaluateScreen"
+			self.screen.children[0].children[1].current = "adminScreen"
 		return self.screen
 
 	def dropdown_options(self):
@@ -174,6 +175,23 @@ class CustomersurveyApp(MDApp): # <- main class
 				**{"text":allElements[item["content"]][lang]} if item["content"] else {},
 				**{"on_release": lambda x = (field, allElements[item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
 				) for item in self.ratingDropdown[field].items]
+
+	def timeout_handler(self, event = None):
+		if self.timeout is not None:
+			self.timeout.cancel()
+		if event == "stop":
+			self.timeout = None
+			return
+		self.timeout = Clock.schedule_once(self.restart, self.timeoutSeconds)
+
+	def restart(self, *args):
+		if self.screen.children[0].children[1].current == "adminScreen":
+			return
+		self.save_inputs()
+		self.initialRating = None
+		self.session = "NULL"
+		sc=self.screen.children[0].children[1].children[0].children[0]
+		sc.load_slide(sc.slides[0])
 
 	def save_inputs(self):
 		if self.initialRating is not None:

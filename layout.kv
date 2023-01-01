@@ -69,15 +69,17 @@
 			text: app.content("menuFeedback")
 			on_press:
 				root.nav_drawer.set_state("close")
-				root.screen_manager.current = "feedbackScreen"
+				root.screen_manager.current = "surveyScreen"
 		OneLineListItem:
 			id: menuEvaluate
 			text: app.content("menuEvaluate")
 			on_press:
 				root.nav_drawer.set_state("close")
-				root.screen_manager.current = "evaluateScreen"
+				root.screen_manager.current = "adminScreen"
 
 MDScreen:
+	id: mainscreen
+	on_touch_down: app.timeout_handler()
 	MDTopAppBar:
 		elevation: 0
 		pos_hint: {"top": 1}
@@ -90,7 +92,7 @@ MDScreen:
 		MDScreenManager:
 			id: screen_manager
 			MDScreen:
-				name: "feedbackScreen"
+				name: "surveyScreen"
 				MDProgressBar:
 					id: progressBar
 					color: app.theme_cls.accent_color
@@ -98,6 +100,7 @@ MDScreen:
 					id: carousel
 					direction: 'bottom'
 					on_slide_complete: progressBar.value = 100 / (len(self.slides) - 1) * self.slides.index(self.current_slide)
+					on_slide_complete: app.timeout_handler("stop") if self.slides.index(self.current_slide) == 0 else app.timeout_handler() 
 					on_slide_complete: app.save_inputs()
 					# general
 					ScreenLayout:
@@ -215,9 +218,16 @@ MDScreen:
 							text: app.content("thankyouLabel")
 						IconButton:
 							icon: "heart"
+							size_hint: 1, 1
 							icon_color: (.97, .65, .97, 1)
+						MDFillRoundFlatIconButton:
+							id: thankyouRestart
+							icon: "restart"
+							text: app.content("thankyouRestart")
+							on_release: app.restart()
+							on_release: carousel.load_slide(carousel.slides[0])
 			MDScreen:
-				name: "evaluateScreen"
+				name: "adminScreen"
 				ScreenLayout:
 					MDTextField:
 						id: adminPass
