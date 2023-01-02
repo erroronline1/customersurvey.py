@@ -66,19 +66,18 @@
 		size_hint: 1,1
 		OneLineListItem:
 			id: menuFeedback
-			text: app.content("menuFeedback")
+			text: app.text.get("menuFeedback")
 			on_press:
 				root.nav_drawer.set_state("close")
 				root.screen_manager.current = "surveyScreen"
 		OneLineListItem:
 			id: menuEvaluate
-			text: app.content("menuEvaluate")
+			text: app.text.get("menuEvaluate")
 			on_press:
 				root.nav_drawer.set_state("close")
 				root.screen_manager.current = "adminScreen"
 
 MDScreen:
-	id: mainscreen
 	on_touch_down: app.timeout_handler()
 	MDTopAppBar:
 		elevation: 0
@@ -86,7 +85,7 @@ MDScreen:
 		left_action_items:
 			[['menu', lambda x: nav_drawer.set_state("open")]]
 		right_action_items:
-			[['arrow-up-drop-circle-outline', lambda x: carousel.load_previous()],['arrow-down-drop-circle-outline', lambda x: carousel.load_next()]]
+			[['arrow-up-drop-circle-outline', lambda x: surveyCarousel.load_previous() if screen_manager.current == "surveyScreen" else adminCarousel.load_previous()],['arrow-down-drop-circle-outline', lambda x: surveyCarousel.load_next() if screen_manager.current == "surveyScreen" else adminCarousel.load_next()]]
 
 	MDNavigationLayout:
 		MDScreenManager:
@@ -97,7 +96,7 @@ MDScreen:
 					id: progressBar
 					color: app.theme_cls.accent_color
 				MDCarousel:
-					id: carousel
+					id: surveyCarousel
 					direction: 'bottom'
 					on_slide_complete: progressBar.value = 100 / (len(self.slides) - 1) * self.slides.index(self.current_slide)
 					on_slide_complete: app.timeout_handler("stop") if self.slides.index(self.current_slide) == 0 else app.timeout_handler() 
@@ -106,116 +105,116 @@ MDScreen:
 					ScreenLayout:
 						TopLabel:
 							id: welcomeLabel
-							text: app.content("welcomeLabel")
+							text: app.text.get("welcomeLabel")
 						IconButton:
 							icon: "emoticon-happy-outline"
 							icon_color: (0,.5,0,1)
 							on_release: app.initialRating = 2
-							on_release: carousel.load_next()
+							on_release: surveyCarousel.load_next()
 						IconButton:
 							icon: "emoticon-neutral-outline"
 							icon_color: (1,.64,0,1)
 							on_release: app.initialRating = 1
-							on_release: carousel.load_next()
+							on_release: surveyCarousel.load_next()
 						IconButton:
 							icon: "emoticon-sad-outline"
 							icon_color: (1,0,0,1)
 							on_release: app.initialRating = 0
-							on_release: carousel.load_next()
+							on_release: surveyCarousel.load_next()
 						Dropdown:
 							id: languageSelection
-							text: app.selectedLanguage
+							text: app.text.selectedLanguage
 							on_release: app.languageDropdown["languageSelection"].open()
 							on_text: app.translate(self.text)
 					# initial gratitude and encouragement to continue
 					ScreenLayout:
 						TopLabel:
 							id: encouragementLabel
-							text: app.content("encouragementLabel")
+							text: app.text.get("encouragementLabel")
 						MDScrollView:
 							MDLabel:
 								id: encouragementText
-								text: app.content("encouragementText")
+								text: app.text.get("encouragementText")
 						MDFillRoundFlatIconButton:
 							id: encouragementYes
 							icon: "thumb-up-outline"
-							text: app.content("encouragementYes")
-							on_release: carousel.load_next()
+							text: app.text.get("encouragementYes")
+							on_release: surveyCarousel.load_next()
 						MDFillRoundFlatIconButton:
 							id: encouragementNo
 							icon: "exit-to-app"
-							text: app.content("encouragementNo")
-							on_release: carousel.load_slide(carousel.slides[len(carousel.slides)-1])
+							text: app.text.get("encouragementNo")
+							on_release: surveyCarousel.load_slide(surveyCarousel.slides[len(surveyCarousel.slides)-1])
 					# 4 more specific questions
 					ScreenLayout:
 						TopLabel:
 							id: detailratingLabel
-							text: app.content("detailratingLabel")
+							text: app.text.get("detailratingLabel")
 						TwoColumns:
 							DropdownLabel:
 								id: detailratingAvailability
-								text: app.content("detailratingAvailability")
+								text: app.text.get("detailratingAvailability")
 							Dropdown:
 								id: detailratingQone
-								text: app.content("detailratingSelect")
+								text: app.text.get("detailratingSelect")
 								on_release: app.ratingDropdown["detailratingQone"].open()
 							DropdownLabel:
 								id: detailratingProcessing
-								text: app.content("detailratingProcessing")
+								text: app.text.get("detailratingProcessing")
 							Dropdown:
 								id: detailratingQtwo
-								text: app.content("detailratingSelect")
+								text: app.text.get("detailratingSelect")
 								on_release: app.ratingDropdown["detailratingQtwo"].open()
 							DropdownLabel:
 								id: detailratingExpertise
-								text: app.content("detailratingExpertise")
+								text: app.text.get("detailratingExpertise")
 							Dropdown:
 								id: detailratingQthree
-								text: app.content("detailratingSelect")
+								text: app.text.get("detailratingSelect")
 								on_release: app.ratingDropdown["detailratingQthree"].open()
 							DropdownLabel:
 								id: detailratingKindness
-								text: app.content("detailratingKindness")
+								text: app.text.get("detailratingKindness")
 							Dropdown:
 								id: detailratingQfour
-								text: app.content("detailratingSelect")
+								text: app.text.get("detailratingSelect")
 								on_release: app.ratingDropdown["detailratingQfour"].open()
 						TwoColumns:
 					# specificially good
 					ScreenLayout:
 						TopLabel:
 							id: commendationLabel
-							text: app.content("commendationLabel")
+							text: app.text.get("commendationLabel")
 						Textfield:
 							id: commendation
-							hint_text: app.content("textHint")
+							hint_text: app.text.get("textHint")
 							multiline: True
 							size_hint: 1, 1
 					# specificially bad
 					ScreenLayout:
 						TopLabel:
 							id: suggestionLabel
-							text: app.content("suggestionLabel")
+							text: app.text.get("suggestionLabel")
 						Textfield:
 							id: suggestion
-							hint_text: app.content("textHint")
+							hint_text: app.text.get("textHint")
 							multiline: True
 							size_hint: 1, 1
 					# received service
 					ScreenLayout:
 						TopLabel:
 							id: serviceLabel
-							text: app.content("serviceLabel")
+							text: app.text.get("serviceLabel")
 						Textfield:
 							id: service
-							hint_text: app.content("textHint")
+							hint_text: app.text.get("textHint")
 							multiline: True
 							size_hint: 1, 1
 					# final gratitude
 					ScreenLayout:
 						TopLabel:
 							id: thankyouLabel
-							text: app.content("thankyouLabel")
+							text: app.text.get("thankyouLabel")
 						IconButton:
 							icon: "heart"
 							size_hint: 1, 1
@@ -223,45 +222,54 @@ MDScreen:
 						MDFillRoundFlatIconButton:
 							id: thankyouRestart
 							icon: "restart"
-							text: app.content("thankyouRestart")
+							text: app.text.get("thankyouRestart")
 							on_release: app.restart()
-							on_release: carousel.load_slide(carousel.slides[0])
+							on_release: surveyCarousel.load_slide(surveyCarousel.slides[0])
 			MDScreen:
 				name: "adminScreen"
-				ScreenLayout:
-					MDTextField:
-						id: adminPass
-						hint_text: app.content("adminPass")
-						password: bool(app.database.password)
-					MDFillRoundFlatIconButton:
-						id: buttonPassword
-						icon: "key-variant"
-						text: app.content("buttonPassword")
-						disabled: bool(app.database.password)
-						on_release: adminPass.text = "" if app.database.write("SETTING", {"KEY": "password", "VALUE": adminPass.text}) else adminPass.text
-						on_release: app.notif(app.content("resetMessage"))
-					MDFillRoundFlatIconButton:
-						id: buttonExport
-						icon: "database-export-outline"
-						text: app.content("buttonExport")
-						disabled: adminPass.text != app.database.password or not app.database.password
-						on_release: app.report()
-						on_release: adminPass.text = ""
-					MDFillRoundFlatIconButton:
-						id: buttonReset
-						icon: "delete-forever-outline"
-						text: app.content("buttonReset")
-						disabled: adminPass.text != app.database.password or not app.database.password
-						on_release: app.cancel_confirm_dialog(app.content("buttonReset"), app.content("cancelReset"), app.content("confirmReset"))
-						on_release: adminPass.text = ""
-					MDScrollView:
-						MDLabel:
-							id: devInfo
-							text: app.content("devInfo")
+				MDCarousel:
+					id: adminCarousel
+					direction: 'bottom'
+					ScreenLayout:
+						MDTextField:
+							id: adminPass
+							hint_text: app.text.get("adminPass")
+							password: bool(app.database.password)
+						MDFillRoundFlatIconButton:
+							id: buttonPassword
+							icon: "key-variant"
+							text: app.text.get("buttonPassword")
+							disabled: bool(app.database.password)
+							on_release: adminPass.text = "" if app.database.write("SETTING", {"KEY": "password", "VALUE": adminPass.text}) else adminPass.text
+							on_release: app.notif(app.text.get("resetMessage"))
+						MDFillRoundFlatIconButton:
+							id: buttonExport
+							icon: "database-export-outline"
+							text: app.text.get("buttonExport")
+							disabled: adminPass.text != app.database.password or not app.database.password
+							on_release: app.report()
+							on_release: adminPass.text = ""
+						MDFillRoundFlatIconButton:
+							id: buttonReset
+							icon: "delete-forever-outline"
+							text: app.text.get("buttonReset")
+							disabled: adminPass.text != app.database.password or not app.database.password
+							on_release: app.cancel_confirm_dialog(app.text.get("buttonReset"), app.text.get("cancelReset"), app.text.get("confirmReset"))
+							on_release: adminPass.text = ""
+						MDScrollView:
+							MDLabel:
+								id: devInfo
+								text: app.text.get("devInfo")
+					ScreenLayout:
+						MDTextField:
+							id: adminPassTwo
+							hint_text: app.text.get("adminPass")
+							password: True
+						
 
-        MDNavigationDrawer:
-            id: nav_drawer
-            radius: (0, 16, 16, 0)
-            ContentNavigationDrawer:
-                screen_manager: screen_manager
-                nav_drawer: nav_drawer
+		MDNavigationDrawer:
+			id: nav_drawer
+			radius: (0, 16, 16, 0)
+			ContentNavigationDrawer:
+				screen_manager: screen_manager
+				nav_drawer: nav_drawer
