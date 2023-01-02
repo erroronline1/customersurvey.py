@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# user interface and default values
 
-def language(chunk=None, lang=None, update=None):
-	element={
+class Language():
+	# text chunks. extend elements at your convenience
+	elements={
 		"menuFeedback": {
 			"english": "Survey",
 			"deutsch": "Umfrage"
@@ -174,10 +174,13 @@ Besuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py'''
 			"deutsch": "Analyse gespeichert unter"
 		},
 	}
-	if chunk and chunk not in element:
-		return "This content snippet has not been declared yet"
-	if update:
-		return element
-	if not chunk and not lang:
-		return tuple(key for key in element["welcomeLabel"])
-	return element[chunk][lang] if lang in element[chunk] else element[chunk]["english"]
+	def __init__(self, language=None):
+		# define selected langauge, defaults to first available language
+		self.selectedLanguage = language if language else self.available()[0]
+	def available(self):
+		# tuple of all defined languages
+		return tuple(key for key in self.elements["welcomeLabel"])
+	def get(self, chunk):
+		# returns requested element
+		result = self.elements.get(chunk)[self.selectedLanguage]
+		return result if result else "This content snippet has not been declared yet"

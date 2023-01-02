@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sqlite3
-from lang import language
+from language import Language
 
 class DataBase():
 	tableFields = {
@@ -9,6 +9,7 @@ class DataBase():
 	}
 	password = ''
 	def __init__(self, db):
+		# tries to establish connection, creates on fail.
 		try:
 			self.connection = sqlite3.connect(db)
 			c = self.connection.cursor()
@@ -62,6 +63,7 @@ class DataBase():
 		self.connection.commit()
 
 		if table=="CS":
+			# keep track of latest insert_id to have rows updated instead of appended if submitted
 			cursor = self.connection.cursor()
 			cursor.execute(f"SELECT MAX(ID) FROM CS;")
 			result = cursor.fetchone()
@@ -80,24 +82,29 @@ class DataBase():
 			return result
 		return False
 
-	def sanitize(self, value="", quotes = True):
+	def sanitize(self, value = "", quotes = True):
+		# sanitary strings to concatenate to sql queries.
+		# if not quotes it probbly is a column key
 		if type(value)==str and value != "NULL":
 			return value.replace('\'','\'\'') if not quotes else "'" + value.replace('\'','\'\'') + "'"
 		return value
 
 	def clear(self, tables=[]):
+		# reset database
 		for table in tables:
 			self.connection.executescript(f"DELETE FROM {table}; VACUUM;")
 		self.connection.commit()
 		return True
 
-	def rtf(self, l, file):
-		rtfHead = language("rtfHead", l)
-		rtfTotal = language("rtfTotal", l)
-		rtfDetail = language("rtfDetail", l)
-		rtfTextInput = language("rtfTextInput", l)
-		rtfCommendation = language("commendationLabel", l)
-		rtfSuggestion = language("suggestionLabel", l)
+	def rtf(self, language, file):
+		# create a report
+		text = Language(language)
+		rtfHead = text.get("rtfHead")
+		rtfTotal = text.get("rtfTotal")
+		rtfDetail = text.get("rtfDetail")
+		rtfTextInput = text.get("rtfTextInput")
+		rtfCommendation = text.get("commendationLabel")
+		rtfSuggestion = text.get("suggestionLabel")
 
 		output = "{\\rtf1 \\ansi\\ansicpg1252\\deff0\\nouicompat "
 
@@ -114,7 +121,7 @@ class DataBase():
 		output += f"\line {rtfTotal[1]} {result[0]} {rtfTotal[2]} {result[1]} {rtfTotal[3]} {result[2]} {rtfTotal[4]} {round(result[3]*50, 2)} % \par "
 		
 		# topic related statistics
-		details = [language("detailratingAvailability" ,l), language("detailratingProcessing" ,l), language("detailratingExpertise" ,l), language("detailratingKindness" ,l)]
+		details = [text.get("detailratingAvailability"), text.get("detailratingProcessing"), text.get("detailratingExpertise"), text.get("detailratingKindness")]
 		for i, detail in enumerate(details):
 			cursor.execute(f"SELECT MIN(DATE) AS zero, MAX(DATE) AS one, COUNT(ID) AS two, AVG(RATING{i}) AS three FROM CS WHERE RATING{i} IS NOT NULL;")
 			result = cursor.fetchall()
@@ -126,7 +133,7 @@ class DataBase():
 			output += f"\line {rtfDetail[1]} {result[0]} {rtfDetail[2]} {result[1]} {rtfDetail[3]} {result[2]} {rtfDetail[4]} {round(result[3]*50, 2)} % "
 
 		# customer text inputs
-		rating = [language("detailratingBad" ,l), language("detailratingMeh" ,l), language("detailratingGood" ,l)]
+		rating = [text.get("detailratingBad"), text.get("detailratingMeh"), text.get("detailratingGood")]
 		output += f"\par \line {{\\b {rtfTextInput[0]}}} "
 		cursor.execute("SELECT * FROM CS WHERE COMMENDATION IS NOT NULL OR SUGGESTION IS NOT NULL OR SERVICE IS NOT NULL;")
 		result = cursor.fetchall()

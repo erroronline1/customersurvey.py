@@ -14,7 +14,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivy.clock import Clock
 
-from lang import language
+from language import Language
 import database
 
 from kivy.core.window import Window
@@ -52,7 +52,7 @@ class CustomersurveyApp(MDApp): # <- main class
 		self.reportFile = self.user_data_dir + "/CustomerSurveyReport.rtf"
 
 		lang = self.database.read(["VALUE"], "SETTING", {"KEY":"language"})
-		self.selectedLanguage = lang[0][0] if lang else "english"
+		self.text = Language(lang[0][0] if lang else None)
 
 		self.screen = Builder.load_file("layout.kv")
 
@@ -65,7 +65,7 @@ class CustomersurveyApp(MDApp): # <- main class
 		self.ratingDropdown = self.dropdown_generator(dropdown_options["rating"])
 		self.languageDropdown = self.dropdown_generator(dropdown_options["language"])
 		if not self.database.password:
-			self.notif(self.content("initMessage"), 1)
+			self.notif(self.text.get("initMessage"), 1)
 			self.screen.children[0].children[1].current = "adminScreen"
 		return self.screen
 
@@ -86,7 +86,7 @@ class CustomersurveyApp(MDApp): # <- main class
 				"context": "ratingDropdown"
 			},
 			"language":{
-				"options": [{"icon": "translate", "option": l} for l in language()],
+				"options": [{"icon": "translate", "option": l} for l in self.text.available()],
 				"fields": ["languageSelection"],
 				"context": "languageDropdown"
 			}
@@ -95,11 +95,11 @@ class CustomersurveyApp(MDApp): # <- main class
 	def dropdown_generator(self, parameter):
 		items = [
 			{
-				"text": self.content(i["content"]) if "content" in i else i["option"],
-				"content": i["content"] if "content" in i else None,
+				"text": self.text.get(i["content"]) if "content" in i else i["option"],
+				"content": i.get("content"),
 				"height": dp(64),
 				"viewclass": "IconListItem" if "icon" in i else None,
-				"icon": i["icon"] if "icon" in i else None,
+				"icon": i.get("icon")
 			} for i in parameter["options"]
 		]
 		return {
@@ -148,32 +148,28 @@ class CustomersurveyApp(MDApp): # <- main class
 
 	def cancel_confirm_dialog_handler(self, *btnObj):
 		self.dialog.dismiss()
-		if btnObj[0].text == self.content("confirmReset"):
+		if btnObj[0].text == self.text.get("confirmReset"):
 			self.database.clear(["CS", "SETTING"])
-			self.notif(self.content("resetMessage"))
-
-	def content(self, element):
-		return language(element, self.selectedLanguage)
+			self.notif(self.text.get("resetMessage"))
 
 	def translate(self, lang):
-		allElements = language(None, None, True)
-		self.selectedLanguage = lang 
+		self.text.selectedLanguage = lang 
 		self.database.write("SETTING", {"KEY":"language", "VALUE":lang}, {"KEY":"language"})
-		for element in allElements:
+		for element in self.text.elements:
 			try:
 				# not all language chunks have their respective id'd counterparts like
 				# * dropdown-objects detailratingGood, -Meh and -Bad
-				self.screen.ids[element].text = allElements[element][lang]
+				self.screen.ids[element].text = self.text.elements[element][lang]
 			except:
 				continue
 		# exceptions for dropdowns
 		dropdown_options=self.dropdown_options()
 		for field in dropdown_options["rating"]["fields"]:
-			self.screen.ids[field].text = allElements["detailratingSelect"][lang]
+			self.screen.ids[field].text = self.text.elements["detailratingSelect"][lang]
 			self.ratingDropdown[field].items = [dict(
 				item,
-				**{"text":allElements[item["content"]][lang]} if item["content"] else {},
-				**{"on_release": lambda x = (field, allElements[item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
+				**{"text": self.text.elements[item["content"]][lang]} if item["content"] else {},
+				**{"on_release": lambda x = (field, self.text.elements[item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
 				) for item in self.ratingDropdown[field].items]
 
 	def timeout_handler(self, event = None):
@@ -206,19 +202,19 @@ class CustomersurveyApp(MDApp): # <- main class
 				"SERVICE": self.screen.ids["service"].text if self.screen.ids["service"].text else "NULL"
 				}
 			dropdown_options = self.dropdown_options()
-			grades = [self.content("detailratingBad"), self.content("detailratingMeh"), self.content("detailratingGood")]
+			grades = [self.text.get("detailratingBad"), self.text.get("detailratingMeh"), self.text.get("detailratingGood")]
 			for i, field in enumerate(dropdown_options["rating"]["fields"]):
 				if self.screen.ids[field].text in grades:
 					key_value[f'RATING{i}'] = grades.index(self.screen.ids[field].text)
 			self.session = self.database.write("CS", key_value, {"ID": self.session})
 		else:
-			self.notif(self.content("missingRateNotif"))
+			self.notif(self.text.get("missingRateNotif"))
 
 	def report(self):
-		if not self.database.rtf(self.selectedLanguage, self.reportFile):
-			self.notif(self.content("rtfFail"))
+		if not self.database.rtf(self.text.selectedLanguage, self.reportFile):
+			self.notif(self.text.get("rtfFail"))
 			return
-		success = self.content("rtfSuccess")
+		success = self.text.get("rtfSuccess")
 		self.notif(f"{success} {self.reportFile}")
 
 	def on_stop(self):
