@@ -182,6 +182,8 @@ class CustomersurveyApp(MDApp): # <- main class
 				**{"text": self.text.elements[item["content"]][lang]} if item["content"] else {},
 				**{"on_release": lambda x = (field, self.text.elements[item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
 				) for item in self.ratingDropdown[field].items]
+		# exception for toolbar
+		self.screen.ids["topappbar"].title=self.text.get("menuSurvey" if self.screen.children[0].children[1].current == "surveyScreen" else "menuAdmin")
 
 	def timeout_handler(self, event = None):
 		if self.timeout is not None:

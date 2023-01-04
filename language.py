@@ -3,11 +3,11 @@
 class Language():
 	# text chunks. extend elements at your convenience
 	elements={
-		"menuFeedback": {
+		"menuSurvey": {
 			"english": "Survey",
 			"deutsch": "Umfrage"
 		},
-		"menuEvaluate": {
+		"menuAdmin": {
 			"english": "Evaluate",
 			"deutsch": "Auswerten"
 		},
@@ -201,16 +201,14 @@ cloudless, privacy oriented.
 
 inputs are exclusively stored locally on the device and kann be exported as a report.
 the display can be adapted to possible frames of tablet stands through the settings. changes are verified by the initial set password.
-
-github.com/erroronline1/customersurvey.py''',
+''',
 			"deutsch": '''Kundenumfrage von error on line 1 (erroronline.one)
 
 Cloudlos, datenschutzorientiert.
 
 Eingaben werden ausschließlich lokal auf dem Gerät gespeichert und können als Auswertung exportiert werden.
 Über die Einstellungen kann die Darstellung an eventuelle Ränder von Tablet-Ständern angepasst werden. Änderungen werden durch das ursprünglich eingegebene Kennwort verifiziert.
-
-github.com/erroronline1/customersurvey.py'''
+'''
 		},
 
 	}
