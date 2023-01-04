@@ -130,15 +130,6 @@ class Language():
 			"english": "I'm sure",
 			"deutsch": "Ich bin mir sicher"
 		},
-		"devInfo": {
-			"english": '''customer survey by error on line 1 (erroronline.one)
-
-server- and cloudless, privacy oriented solution.
-visit the open source code on github.com/erroronline1/customersurvey.py''',
-			"deutsch": '''Kundenumfrage von error on line 1 (erroronline.one)
-server- und cloudlos, datenschutzorientierte Lösung.
-Besuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py'''
-		},
 
 		"initMessage": {
 			"english": "database initialized...",
@@ -173,6 +164,55 @@ Besuche den offenen Quelltext auf github.com/erroronline1/customersurvey.py'''
 			"english": "Report saved as",
 			"deutsch": "Analyse gespeichert unter"
 		},
+
+		"adminTimeout": {
+			"english": "Timeout",
+			"deutsch": "Ablaufzeit"
+		},
+		"adminScreenTopBarPercent": {
+			"english": "Top bar height",
+			"deutsch": "Höhe des oberen Menübalkens"
+		},
+		"adminScreenPaddingLeft": {
+			"english": "left padding",
+			"deutsch": "Randabstand links"
+		},
+		"adminScreenPaddingTop": {
+			"english": "top padding",
+			"deutsch": "Randabstand oben"
+		},
+		"adminScreenPaddingRight": {
+			"english": "right padding",
+			"deutsch": "Randabstand rechts"
+		},
+		"adminScreenPaddingBottom": {
+			"english": "bottom padding",
+			"deutsch": "Randabstand unten"
+		},
+		"adminSave": {
+			"english": "save",
+			"deutsch": "speichern"
+		},
+
+		"devInfo": {
+			"english": '''customer survey by error on line 1 (erroronline.one)
+
+cloudless, privacy oriented.
+
+inputs are exclusively stored locally on the device and kann be exported as a report.
+the display can be adapted to possible frames of tablet stands through the settings. changes are verified by the initial set password.
+
+github.com/erroronline1/customersurvey.py''',
+			"deutsch": '''Kundenumfrage von error on line 1 (erroronline.one)
+
+Cloudlos, datenschutzorientiert.
+
+Eingaben werden ausschließlich lokal auf dem Gerät gespeichert und können als Auswertung exportiert werden.
+Über die Einstellungen kann die Darstellung an eventuelle Ränder von Tablet-Ständern angepasst werden. Änderungen werden durch das ursprünglich eingegebene Kennwort verifiziert.
+
+github.com/erroronline1/customersurvey.py'''
+		},
+
 	}
 	def __init__(self, language=None):
 		# define selected langauge, defaults to first available language

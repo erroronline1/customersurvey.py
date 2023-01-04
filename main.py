@@ -21,14 +21,6 @@ from kivy.core.window import Window
 
 from datetime import datetime
 
-'''
-todo
-
-configurable margins? (admin slides?)
-define questions for being compiled?
-
-'''
-
 class IconListItem(OneLineIconListItem):
 	icon = StringProperty()
 
@@ -41,7 +33,6 @@ class CustomersurveyApp(MDApp): # <- main class
 	session = "NULL" # according to database id to assign inputs to a row
 	initialRating = None
 	timeout = None
-	timeoutSeconds = 30
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -53,7 +44,9 @@ class CustomersurveyApp(MDApp): # <- main class
 
 		lang = self.database.read(["VALUE"], "SETTING", {"KEY":"language"})
 		self.text = Language(lang[0][0] if lang else None)
-
+		timeout = self.database.read(["VALUE"], "SETTING", {"KEY":"timeout"})
+		self.timeoutSeconds = int(timeout[0][0] if timeout else 30)
+		self.screen_adjustments()
 		self.screen = Builder.load_file("layout.kv")
 
 	def __getitem__(self, x):
@@ -68,6 +61,20 @@ class CustomersurveyApp(MDApp): # <- main class
 			self.notif(self.text.get("initMessage"), 1)
 			self.screen.children[0].children[1].current = "adminScreen"
 		return self.screen
+
+	def screen_adjustments(self):
+		layout = (self.database.read(["VALUE"], "SETTING", {"KEY":"paddingleft"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY":"paddingtop"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY":"paddingright"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY":"paddingbottom"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY":"topbar"}))
+		
+		self.layout = {"left": int(layout[0][0][0] if layout[0] else 20),
+			"top": int(layout[0][1][0] if layout[0] else 0),
+			"right": int(layout[0][2][0] if layout[0] else 20),
+			"bottom": int(layout[0][3][0] if layout[0] else 20),
+			"topbar": int(layout[0][3][0] if layout[0] else 10)/100,
+			}
 
 	def dropdown_options(self):
 		return {
@@ -117,17 +124,17 @@ class CustomersurveyApp(MDApp): # <- main class
 		self.screen.ids[field].text = text
 		self[context][field].dismiss()
 
-	def notif(self, msg, delay = 0):
+	def notif(self, msg, display_delayed = 0):
 		def sb(this):
 			Snackbar(
 				text = msg,
-				snackbar_x = "10dp",
-				snackbar_y = "10dp",
+				snackbar_x = self.layout["left"],
+				snackbar_y = self.layout["bottom"],#"10dp",
 				size_hint_x = (
-					Window.width - (dp(10) * 2)
+					Window.width - (self.layout["bottom"] * 2)
 				) / Window.width
 			).open()
-		Clock.schedule_once(sb, delay)
+		Clock.schedule_once(sb, display_delayed)
 
 	def cancel_confirm_dialog(self, decision, cancel, confirm):
 		if not self.dialog:
@@ -159,7 +166,11 @@ class CustomersurveyApp(MDApp): # <- main class
 			try:
 				# not all language chunks have their respective id'd counterparts like
 				# * dropdown-objects detailratingGood, -Meh and -Bad
-				self.screen.ids[element].text = self.text.elements[element][lang]
+				obj = self.screen.ids[element]
+				if hasattr(obj, "hint_text") and obj.hint_text:
+					obj.hint_text = self.text.elements[element][lang]
+				elif hasattr(obj, "text") and obj.text:
+					obj.text = self.text.elements[element][lang]
 			except:
 				continue
 		# exceptions for dropdowns
