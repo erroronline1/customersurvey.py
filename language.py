@@ -8,12 +8,12 @@ class Language():
 			"deutsch": "Umfrage"
 		},
 		"menuAdmin": {
-			"english": "Evaluate",
-			"deutsch": "Auswerten"
+			"english": "Settings",
+			"deutsch": "Einstellungen"
 		},
 
 		"welcomeLabel": {
-			"english": "What is your opinion?",
+			"english": "How satisfied are you with us?",
 			"deutsch": "Wie zufrieden sind Sie mit uns?"
 		},
 
@@ -170,8 +170,8 @@ class Language():
 			"deutsch": "Ablaufzeit"
 		},
 		"adminScreenTopBarPercent": {
-			"english": "Top bar height",
-			"deutsch": "Höhe des oberen Menübalkens"
+			"english": "Top bar height in percent",
+			"deutsch": "Höhe des oberen Menübalkens in Prozent"
 		},
 		"adminScreenPaddingLeft": {
 			"english": "left padding",
