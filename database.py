@@ -82,10 +82,21 @@ class DataBase():
 			return result
 		return False
 
+	def delete(self, table = "", where = {}):
+		condition= []
+		for key in where:
+			condition.append(f"{self.sanitize(key, False)}={self.sanitize(where[key])}")
+		if len(condition):
+			self.connection.execute(f"DELETE FROM {table} WHERE {' AND '.join(condition)};")
+		self.connection.commit()
+		return True
+
 	def sanitize(self, value = "", quotes = True):
 		# sanitary strings to concatenate to sql queries.
 		# if not quotes it probbly is a column key
 		if type(value)==str and value != "NULL":
+			if value.strip()=="":
+				return "NULL"
 			return value.replace('\'','\'\'') if not quotes else "'" + value.replace('\'','\'\'') + "'"
 		return value
 
