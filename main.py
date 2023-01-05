@@ -42,9 +42,9 @@ class CustomersurveyApp(MDApp): # <- main class
 		self.database = database.DataBase(self.user_data_dir + "/CustomerSurvey.db")
 		self.reportFile = self.user_data_dir + "/CustomerSurveyReport.rtf"
 
-		lang = self.database.read(["VALUE"], "SETTING", {"KEY":"language"})
+		lang = self.database.read(["VALUE"], "SETTING", {"KEY": "language"})
 		self.text = Language(lang[0][0] if lang else None)
-		timeout = self.database.read(["VALUE"], "SETTING", {"KEY":"timeout"})
+		timeout = self.database.read(["VALUE"], "SETTING", {"KEY": "timeout"})
 		self.timeoutSeconds = int(timeout[0][0] if timeout else 30)
 		self.screen_adjustments()
 		self.screen = Builder.load_file("layout.kv")
@@ -63,17 +63,16 @@ class CustomersurveyApp(MDApp): # <- main class
 		return self.screen
 
 	def screen_adjustments(self):
-		layout = (self.database.read(["VALUE"], "SETTING", {"KEY":"paddingleft"}),
-			self.database.read(["VALUE"], "SETTING", {"KEY":"paddingtop"}),
-			self.database.read(["VALUE"], "SETTING", {"KEY":"paddingright"}),
-			self.database.read(["VALUE"], "SETTING", {"KEY":"paddingbottom"}),
-			self.database.read(["VALUE"], "SETTING", {"KEY":"topbar"}))
-		
+		layout = (self.database.read(["VALUE"], "SETTING", {"KEY": "paddingleft"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY": "paddingtop"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY": "paddingright"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY": "paddingbottom"}),
+			self.database.read(["VALUE"], "SETTING", {"KEY": "topbar"}))
 		self.layout = {"left": int(layout[0][0][0] if layout[0] else 20),
-			"top": int(layout[0][1][0] if layout[0] else 0),
-			"right": int(layout[0][2][0] if layout[0] else 20),
-			"bottom": int(layout[0][3][0] if layout[0] else 20),
-			"topbar": int(layout[0][3][0] if layout[0] else 10)/100,
+			"top": int(layout[1][0][0] if layout[1] else 0),
+			"right": int(layout[2][0][0] if layout[2] else 20),
+			"bottom": int(layout[3][0][0] if layout[3] else 20),
+			"topbar": int(layout[4][0][0] if layout[4] else 10) / 100,
 			}
 
 	def dropdown_options(self):
@@ -130,9 +129,7 @@ class CustomersurveyApp(MDApp): # <- main class
 				text = msg,
 				snackbar_x = self.layout["left"],
 				snackbar_y = self.layout["bottom"],#"10dp",
-				size_hint_x = (
-					Window.width - (self.layout["bottom"] * 2)
-				) / Window.width
+				size_hint_x = (Window.width - self.layout["left"] - self.layout["right"]) / Window.width,
 			).open()
 		Clock.schedule_once(sb, display_delayed)
 
@@ -161,7 +158,7 @@ class CustomersurveyApp(MDApp): # <- main class
 
 	def translate(self, lang):
 		self.text.selectedLanguage = lang 
-		self.database.write("SETTING", {"KEY":"language", "VALUE":lang}, {"KEY":"language"})
+		self.database.write("SETTING", {"KEY": "language", "VALUE": lang}, {"KEY": "language"})
 		for element in self.text.elements:
 			try:
 				# not all language chunks have their respective id'd counterparts like
@@ -183,7 +180,7 @@ class CustomersurveyApp(MDApp): # <- main class
 				**{"on_release": lambda x = (field, self.text.elements[item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
 				) for item in self.ratingDropdown[field].items]
 		# exception for toolbar
-		self.screen.ids["topappbar"].title=self.text.get("menuSurvey" if self.screen.children[0].children[1].current == "surveyScreen" else "menuAdmin")
+		self.screen.ids["toolbar"].title=self.text.get("menuSurvey" if self.screen.children[0].children[1].current == "surveyScreen" else "menuAdmin")
 
 	def timeout_handler(self, event = None):
 		if self.timeout is not None:
@@ -222,6 +219,26 @@ class CustomersurveyApp(MDApp): # <- main class
 			self.session = self.database.write("CS", key_value, {"ID": self.session})
 		else:
 			self.notif(self.text.get("missingRateNotif"))
+
+	def save_setting(self, key, value):
+		sanitize={
+			"default": lambda x: int(x),
+			"password": lambda x: x.strip(),
+			"topbar": lambda x: int(float(x)) if int(float(x)) > 10 else 8,
+			"timeout": lambda x: int(x) if int(x) > 5 else 5 # even though this fallback is rather short
+		}
+		try:
+			if key in sanitize:
+				value=sanitize[key](value)
+			else:
+				value=sanitize["default"](value)
+		except Exception as e:
+			value=""
+		if value in ("", "NULL"):
+			self.database.delete("SETTING", {"KEY": key})
+		else:
+			self.database.write("SETTING", {"KEY": key, "VALUE": value}, {"KEY": key})
+		return str(value)
 
 	def report(self):
 		if not self.database.rtf(self.text.selectedLanguage, self.reportFile):

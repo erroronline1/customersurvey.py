@@ -35,8 +35,7 @@
 	spacing: [10,20]
 
 <DropdownLabel@MDLabel>
-	size_hint: None, 1
-	width: "256sp"
+	size_hint: 1, 1
 	pos_hint: {'center': (.5, .5)}
 
 <IconListItem>
@@ -73,7 +72,7 @@
 MDScreen:
 	on_touch_down: app.timeout_handler()
 	MDTopAppBar:
-		id: topappbar
+		id: toolbar
 		title: app.text.get("menuSurvey" if screen_manager.current == "surveyScreen" else "menuAdmin")
 		size_hint: 1, app.layout["topbar"]
 		padding: (app.layout["left"], app.layout["top"], app.layout["right"], 0)
@@ -85,7 +84,7 @@ MDScreen:
 			[['arrow-up-drop-circle-outline', lambda x: surveyCarousel.load_previous() if screen_manager.current == "surveyScreen" else adminCarousel.load_previous()],['arrow-down-drop-circle-outline', lambda x: surveyCarousel.load_next() if screen_manager.current == "surveyScreen" else adminCarousel.load_next()]]
 
 	MDNavigationLayout:
-		size_hint: 1, 1-app.layout["topbar"]
+		size_hint: 1, 1 - app.layout["topbar"]
 		MDScreenManager:
 			id: screen_manager
 			MDScreen:
@@ -239,7 +238,7 @@ MDScreen:
 							icon: "key-variant"
 							text: app.text.get("buttonPassword")
 							disabled: bool(app.database.password)
-							on_release: adminPass.text = "" if app.database.write("SETTING", {"KEY": "password", "VALUE": adminPass.text}) else adminPass.text
+							on_release: adminPass.text = "" if app.save_setting("password", adminPass.text) else adminPass.text
 							on_release: app.notif(app.text.get("resetMessage"))
 						MDFillRoundFlatIconButton:
 							id: buttonExport
@@ -268,7 +267,7 @@ MDScreen:
 						MDTextField:
 							id: adminScreenTopBarPercent
 							hint_text: app.text.get("adminScreenTopBarPercent")
-							text: str(app.layout["topbar"])
+							text: str(int(app.layout["topbar"] * 100))
 						MDTextField:
 							id: adminScreenPaddingLeft
 							hint_text: app.text.get("adminScreenPaddingLeft")
@@ -290,12 +289,13 @@ MDScreen:
 							icon: "content-save-outline"
 							text: app.text.get("adminSave")
 							disabled: adminPassTwo.text != app.database.password
-							on_release: adminPassTwo.text = "" if app.database.write("SETTING", {"KEY": "timeout", "VALUE": adminTimeout.text}, {"KEY": "timeout"}) else adminPassTwo.text
-							on_release: app.database.write("SETTING", {"KEY": "topbar", "VALUE": adminScreenTopBarPercent.text}, {"KEY":"topbar"})
-							on_release: app.database.write("SETTING", {"KEY": "paddingleft", "VALUE": adminScreenPaddingLeft.text}, {"KEY":"paddingleft"})
-							on_release: app.database.write("SETTING", {"KEY": "paddingtop", "VALUE": adminScreenPaddingTop.text}, {"KEY":"paddingtop"})
-							on_release: app.database.write("SETTING", {"KEY": "paddingright", "VALUE": adminScreenPaddingRight.text}, {"KEY":"paddingright"})
-							on_release: app.database.write("SETTING", {"KEY": "paddingbottom", "VALUE": adminScreenPaddingBottom.text}, {"KEY":"paddingbottom"})
+							on_release: adminPassTwo.text = ""
+							on_release: adminTimeout.text = app.save_setting("timeout", adminTimeout.text)
+							on_release: adminScreenTopBarPercent.text = app.save_setting("topbar", adminScreenTopBarPercent.text)
+							on_release: adminScreenPaddingLeft.text = app.save_setting("paddingleft", adminScreenPaddingLeft.text)
+							on_release: adminScreenPaddingTop.text = app.save_setting("paddingtop", adminScreenPaddingTop.text)
+							on_release: adminScreenPaddingRight.text = app.save_setting("paddingright", adminScreenPaddingRight.text)
+							on_release: adminScreenPaddingBottom.text = app.save_setting("paddingbottom", adminScreenPaddingBottom.text)
 					ScreenLayout:
 						# dev info
 						MDScrollView:
