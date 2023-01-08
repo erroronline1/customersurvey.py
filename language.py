@@ -114,9 +114,13 @@ class Language():
 			"english": "set password",
 			"deutsch": "Kennwort festlegen"
 		},
-		"buttonExport": {
-			"english": "export",
-			"deutsch": "exportieren"
+		"buttonRtfExport": {
+			"english": "generate RTF report",
+			"deutsch": "RTF Analyse erzeugen"
+		},
+		"buttonCsvExport": {
+			"english": "export CSV data",
+			"deutsch": "CSV Datenexport"
 		},
 		"buttonReset": {
 			"english": "reset",
@@ -132,8 +136,8 @@ class Language():
 		},
 
 		"initMessage": {
-			"english": "database initialized...",
-			"deutsch": "Datenbank initialisiert..."
+			"english": "Database initialized. Please provide password.",
+			"deutsch": "Datenbank initialisiert. Bitte Kennwort angeben."
 		},
 		"resetMessage": {
 			"english": "please restart app...",
@@ -163,6 +167,14 @@ class Language():
 		"rtfSuccess":{
 			"english": "Report saved as",
 			"deutsch": "Analyse gespeichert unter"
+		},
+		"csvFail":{
+			"english": "Export could not be generated",
+			"deutsch": "Export konnte nicht erstellt werden."
+		},
+		"csvSuccess":{
+			"english": "Export saved as",
+			"deutsch": "Export gespeichert unter"
 		},
 
 		"adminTimeout": {
@@ -199,7 +211,7 @@ class Language():
 
 cloudless, privacy oriented.
 
-inputs are exclusively stored locally on the device and kann be exported as a report.
+inputs are exclusively stored locally on the device and can be exported as a report.
 the display can be adapted to possible frames of tablet stands through the settings. changes are verified by the initial set password.
 ''',
 			"deutsch": '''Kundenumfrage von error on line 1 (erroronline.one)

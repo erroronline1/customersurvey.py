@@ -227,8 +227,10 @@ MDScreen:
 				MDCarousel:
 					id: adminCarousel
 					direction: 'bottom'
-					# set passwort on init, export, reset
+					# set password on init, export, reset
 					ScreenLayout:
+						MDLabel:
+							text: app.database.status if app.database.status else app.text.get("initMessage") if not app.database.password else ""
 						MDTextField:
 							id: adminPass
 							hint_text: app.text.get("adminPass")
@@ -241,11 +243,18 @@ MDScreen:
 							on_release: adminPass.text = "" if app.save_setting("password", adminPass.text) else adminPass.text
 							on_release: app.notif(app.text.get("resetMessage"))
 						MDFillRoundFlatIconButton:
-							id: buttonExport
-							icon: "database-export-outline"
-							text: app.text.get("buttonExport")
+							id: buttonRtfExport
+							icon: "file-document-outline"
+							text: app.text.get("buttonRtfExport")
 							disabled: adminPass.text != app.database.password or not app.database.password
-							on_release: app.report()
+							on_release: app.export("rtf")
+							on_release: adminPass.text = ""
+						MDFillRoundFlatIconButton:
+							id: buttonCsvExport
+							icon: "file-table-outline"
+							text: app.text.get("buttonCsvExport")
+							disabled: adminPass.text != app.database.password or not app.database.password
+							on_release: app.export("csv")
 							on_release: adminPass.text = ""
 						MDFillRoundFlatIconButton:
 							id: buttonReset
@@ -303,10 +312,10 @@ MDScreen:
 								id: devInfo
 								text: app.text.get("devInfo")
 						MDRectangleFlatIconButton:
+							center_x: .5
 							text: "github.com/erroronline1/customersurvey.py"
 							icon: "github"
 							line_color: (0, 0, 0, 0)
-							#disabled:True
 		MDNavigationDrawer:
 			id: nav_drawer
 			radius: (0, 16, 16, 0)

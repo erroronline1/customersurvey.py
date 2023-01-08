@@ -63,7 +63,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 		self.theme_cls.theme_style = "Light"
 		self.theme_cls.primary_palette = "Teal"
 		self.storage_path = platform_handler()
-		self.database = database.DataBase(os.path.join( self.storage_path["app"], "CustomerSurvey.db"), os.path.join(self.storage_path["primary_external"], "CustomerSurveyReport.rtf"))
+		self.database = database.DataBase(os.path.join( self.storage_path["app"], "CustomerSurvey.db"), os.path.join(self.storage_path["primary_external"], "CustomerSurveyReport"))
 
 		lang = self.database.read(["VALUE"], "SETTING", {"KEY": "language"})
 		self.text = Language(lang[0][0] if lang else None)
@@ -246,7 +246,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 		sanitize={
 			"default": lambda x: int(x),
 			"password": lambda x: x.strip(),
-			"topbar": lambda x: int(float(x)) if int(float(x)) > 10 else 8,
+			"topbar": lambda x: int(float(x)) if 7 < int(float(x)) < 16 else 10,
 			"timeout": lambda x: int(x) if int(x) > 5 else 5 # even though this fallback is rather short
 		}
 		try:
@@ -262,11 +262,19 @@ class CustomerSurveyApp(MDApp): # <- main class
 			self.database.write("SETTING", {"KEY": key, "VALUE": value}, {"KEY": key})
 		return str(value)
 
-	def report(self):
-		if not self.database.rtf(self.text.selectedLanguage):
-			self.notif(f"{self.text.get('rtfFail')} {self.database.status}")
+	def export(self, type="rtf"):
+		if type=="rtf":
+			if not self.database.rtf(self.text.selectedLanguage):
+				self.notif(f"{self.text.get('rtfFail')} {self.database.status}")
+				return
+			self.notif(f"{self.text.get('rtfSuccess')} {self.database.status}")
 			return
-		self.notif(f"{self.text.get('rtfSuccess')} {self.database.status}")
+		elif type=="csv":
+			if not self.database.csv():
+				self.notif(f"{self.text.get('csvFail')} {self.database.status}")
+				return
+			self.notif(f"{self.text.get('csvSuccess')} {self.database.status}")
+			return
 
 	def on_stop(self):
 		#without this, app will not exit even if the window is closed

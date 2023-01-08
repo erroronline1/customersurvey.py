@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 from language import Language
+import csv
 
 class DataBase():
 	tableFields = {
@@ -103,6 +104,30 @@ class DataBase():
 		self.connection.commit()
 		return True
 
+	def csv(self):
+		try:
+			with open(self.exportPath + ".csv", 'w', newline='') as csvfile:
+				writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+				# add reduced header
+				writer.writerow('"'+str(column)+'"' for column in self.tableFields['CS'])
+
+				cursor = self.connection.cursor()
+				cursor.execute("SELECT * FROM CS;")
+				result = cursor.fetchall()
+				if result is not None:
+					for row in result:
+						output = []
+						for column in row:
+							output.append(column)
+						writer.writerow('"'+str(c)+'"' for c in output)
+			csvfile.close()
+			self.status = self.exportPath + ".csv"
+			return True
+		except Exception as error:
+			self.status = error
+			print(error)
+			return False
+
 	def rtf(self, language):
 		# create a report
 		text = Language(language)
@@ -157,9 +182,9 @@ class DataBase():
 		
 		output +="}"
 		try:
-			with open(self.exportPath, 'w', newline = '') as rtfFile:
+			with open(self.exportPath + ".rtf", 'w', newline = '') as rtfFile:
 				rtfFile.write(output)
-			self.status = self.exportPath
+			self.status = self.exportPath + ".rtf"
 			return True
 		except Exception as error:
 			self.status = error
