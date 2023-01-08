@@ -7,43 +7,39 @@ class DataBase():
 		"CS": ["ID", "DATE", "RATING", "RATING0", "RATING1", "RATING2", "RATING3", "COMMENDATION", "SUGGESTION", "SERVICE"],
 		"SETTING": ["KEY", "VALUE"]
 	}
-	password = ''
-	def __init__(self, db):
+	password = ""
+	status = ""
+	def __init__(self, db, exportpath = None):
+		self.exportPath = exportpath
 		# tries to establish connection, creates on fail.
 		try:
 			self.connection = sqlite3.connect(db)
 			c = self.connection.cursor()
-			c.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='CS';")
-			if not c.fetchone()[0]:
-				self.create()
-			else:
-				getpwd = self.read(["VALUE"], "SETTING", {"KEY":"password"})
-				self.password = getpwd[0][0] if getpwd else ''
+			c.execute(f'''
+				CREATE TABLE IF NOT EXISTS CS
+				({self.tableFields["CS"][0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+				{self.tableFields["CS"][1]} TINYTEXT,
+				{self.tableFields["CS"][2]} INTEGER,
+				{self.tableFields["CS"][3]} INTEGER,
+				{self.tableFields["CS"][4]} INTEGER,
+				{self.tableFields["CS"][5]} INTEGER,
+				{self.tableFields["CS"][6]} INTEGER,
+				{self.tableFields["CS"][7]} TEXT,
+				{self.tableFields["CS"][8]} TEXT,
+				{self.tableFields["CS"][9]} TINYTEXT);''')
+			c.execute(f'''
+				CREATE TABLE IF NOT EXISTS SETTING
+				({self.tableFields["SETTING"][0]} TINYTEXT UNIQUE,
+				{self.tableFields["SETTING"][1]} TINYTEXT);''')
+			self.connection.commit()
+			
+			getpwd = self.read(["VALUE"], "SETTING", {"KEY":"password"})
+			self.password = getpwd[0][0] if getpwd else ''
 		except Exception as error:
-			pass
+			self.status +=f" {error} {db}"
 
 	def __del__(self):
 		self.connection.close()
-
-	def create(self):
-		self.connection.executescript(f'''
-			CREATE TABLE CS
-			({self.tableFields["CS"][0]} INTEGER PRIMARY KEY AUTOINCREMENT,
-			{self.tableFields["CS"][1]} TINYTEXT,
-			{self.tableFields["CS"][2]} INTEGER,
-			{self.tableFields["CS"][3]} INTEGER,
-			{self.tableFields["CS"][4]} INTEGER,
-			{self.tableFields["CS"][5]} INTEGER,
-			{self.tableFields["CS"][6]} INTEGER,
-			{self.tableFields["CS"][7]} TEXT,
-			{self.tableFields["CS"][8]} TEXT,
-			{self.tableFields["CS"][9]} TINYTEXT);
-
-			CREATE TABLE SETTING
-			({self.tableFields["SETTING"][0]} TINYTEXT UNIQUE,
-			{self.tableFields["SETTING"][1]} TINYTEXT);''')
-		self.connection.commit()
-		return True
 
 	def write(self, table="", key_value={}, where={}):
 		condition, values, updates = [], [], []
@@ -107,7 +103,7 @@ class DataBase():
 		self.connection.commit()
 		return True
 
-	def rtf(self, language, file):
+	def rtf(self, language):
 		# create a report
 		text = Language(language)
 		rtfHead = text.get("rtfHead")
@@ -141,7 +137,7 @@ class DataBase():
 				continue
 			result = result[0]
 			output += f"\par {rtfDetail[0]} {{\i {detail}}} "
-			output += f"\line {rtfDetail[1]} {result[0]} {rtfDetail[2]} {result[1]} {rtfDetail[3]} {result[2]} {rtfDetail[4]} {round(result[3]*50, 2)} % "
+			output += f"\line {rtfDetail[1]} {result[0]} {rtfDetail[2]} {result[1]} {rtfDetail[3]} {result[2]} {rtfDetail[4]} {round(result[3]*50, 2)if result[3] else None} %"
 
 		# customer text inputs
 		rating = [text.get("detailratingBad"), text.get("detailratingMeh"), text.get("detailratingGood")]
@@ -161,8 +157,10 @@ class DataBase():
 		
 		output +="}"
 		try:
-			with open(file, 'w', newline = '') as rtfFile:
+			with open(self.exportPath, 'w', newline = '') as rtfFile:
 				rtfFile.write(output)
+			self.status = self.exportPath
 			return True
 		except Exception as error:
+			self.status = error
 			return False
