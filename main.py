@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-__version__ = "0.1"
+__version__ = "1.0"
 
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import StringProperty, ObjectProperty
+from kivy.core.window import Window
+from kivy import platform
 
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineIconListItem
@@ -14,12 +16,34 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivy.clock import Clock
 
+import os
+from pathlib import Path
+from datetime import datetime
+
 from language import Language
 import database
 
-from kivy.core.window import Window
-
-from datetime import datetime
+def platform_handler():
+	if platform=="android":
+		# on android 10+ sqlite won't work on primary_external_storage_path
+		# although files can be written and read there.
+		# see https://github.com/Android-for-Python/Android-for-Python-Users#mediastore
+		# the database part.
+		from android.permissions import Permission, request_permissions, check_permission
+		from android.storage import app_storage_path, primary_external_storage_path
+		perms = [Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE]
+		def check_permissions(perms):
+			for perm in perms:
+				if check_permission(perm) != True:
+					return False
+			return True
+		if check_permissions(perms)!= True:
+			request_permissions(perms)    # get android permissions     
+			#exit()						# app has to be restarted; permissions will work on 2nd start		
+		return {"app": app_storage_path(), "primary_external":os.path.join(primary_external_storage_path(), "Documents")}
+	else:
+		Window.size = (400, 666) #1200x2000 samsung galaxy tab a7
+		return {"app": str(Path.home()), "primary_external":str(Path.home())}
 
 class IconListItem(OneLineIconListItem):
 	icon = StringProperty()
@@ -28,7 +52,7 @@ class ContentNavigationDrawer(MDBoxLayout):
 	screen_manager = ObjectProperty()
 	nav_drawer = ObjectProperty()
 
-class CustomersurveyApp(MDApp): # <- main class
+class CustomerSurveyApp(MDApp): # <- main class
 	dialog = None
 	session = "NULL" # according to database id to assign inputs to a row
 	initialRating = None
@@ -38,9 +62,8 @@ class CustomersurveyApp(MDApp): # <- main class
 		super().__init__(**kwargs)
 		self.theme_cls.theme_style = "Light"
 		self.theme_cls.primary_palette = "Teal"
-
-		self.database = database.DataBase(self.user_data_dir + "/CustomerSurvey.db")
-		self.reportFile = self.user_data_dir + "/CustomerSurveyReport.rtf"
+		self.storage_path = platform_handler()
+		self.database = database.DataBase(os.path.join( self.storage_path["app"], "CustomerSurvey.db"), os.path.join(self.storage_path["primary_external"], "CustomerSurveyReport.rtf"))
 
 		lang = self.database.read(["VALUE"], "SETTING", {"KEY": "language"})
 		self.text = Language(lang[0][0] if lang else None)
@@ -53,12 +76,11 @@ class CustomersurveyApp(MDApp): # <- main class
 		return getattr(self, x)
 
 	def build(self):
-		Window.size = (400, 666) #1200x2000 samsung galaxy tab a7
+		self.icon = r'assets/app_icon.png'
 		dropdown_options = self.dropdown_options()
 		self.ratingDropdown = self.dropdown_generator(dropdown_options["rating"])
 		self.languageDropdown = self.dropdown_generator(dropdown_options["language"])
 		if not self.database.password:
-			self.notif(self.text.get("initMessage"), 1)
 			self.screen.children[0].children[1].current = "adminScreen"
 		return self.screen
 
@@ -128,7 +150,7 @@ class CustomersurveyApp(MDApp): # <- main class
 			Snackbar(
 				text = msg,
 				snackbar_x = self.layout["left"],
-				snackbar_y = self.layout["bottom"],#"10dp",
+				snackbar_y = self.layout["bottom"],
 				size_hint_x = (Window.width - self.layout["left"] - self.layout["right"]) / Window.width,
 			).open()
 		Clock.schedule_once(sb, display_delayed)
@@ -241,15 +263,14 @@ class CustomersurveyApp(MDApp): # <- main class
 		return str(value)
 
 	def report(self):
-		if not self.database.rtf(self.text.selectedLanguage, self.reportFile):
-			self.notif(self.text.get("rtfFail"))
+		if not self.database.rtf(self.text.selectedLanguage):
+			self.notif(f"{self.text.get('rtfFail')} {self.database.status}")
 			return
-		success = self.text.get("rtfSuccess")
-		self.notif(f"{success} {self.reportFile}")
+		self.notif(f"{self.text.get('rtfSuccess')} {self.database.status}")
 
 	def on_stop(self):
 		#without this, app will not exit even if the window is closed
 		pass
 
 if __name__ == "__main__":
-	CustomersurveyApp().run()
+	CustomerSurveyApp().run()
