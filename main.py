@@ -65,8 +65,9 @@ class CustomerSurveyApp(MDApp): # <- main class
 		self.storage_path = platform_handler()
 		self.database = database.DataBase(os.path.join( self.storage_path["app"], "CustomerSurvey.db"), os.path.join(self.storage_path["primary_external"], "CustomerSurveyReport"))
 
-		lang = self.database.read(["VALUE"], "SETTING", {"KEY": "language"})
-		self.text = Language(lang[0][0] if lang else None)
+		surveylanguage = self.database.read(["VALUE"], "SETTING", {"KEY": "surveylanguage"})
+		adminlanguage = self.database.read(["VALUE"], "SETTING", {"KEY": "adminlanguage"})
+		self.text = Language(surveylanguage[0][0] if surveylanguage else None, adminlanguage[0][0] if adminlanguage else None)
 		timeout = self.database.read(["VALUE"], "SETTING", {"KEY": "timeout"})
 		self.timeoutSeconds = int(timeout[0][0] if timeout else 30)
 		self.screen_adjustments()
@@ -78,8 +79,9 @@ class CustomerSurveyApp(MDApp): # <- main class
 	def build(self):
 		self.icon = r'assets/app_icon.png'
 		dropdown_options = self.dropdown_options()
-		self.ratingDropdown = self.dropdown_generator(dropdown_options["rating"])
-		self.languageDropdown = self.dropdown_generator(dropdown_options["language"])
+		self.surveyRatingDropdown = self.dropdown_generator(dropdown_options["rating"], "survey")
+		self.surveyLanguageDropdown = self.dropdown_generator(dropdown_options["surveyLanguage"], "survey")
+		self.adminLanguageDropdown = self.dropdown_generator(dropdown_options["adminLanguage"], "admin")
 		if not self.database.password:
 			self.screen.children[0].children[1].current = "adminScreen"
 		return self.screen
@@ -111,19 +113,25 @@ class CustomerSurveyApp(MDApp): # <- main class
 					"detailratingQthree",
 					"detailratingQfour"
 				],
-				"context": "ratingDropdown"
+				"context": "surveyRatingDropdown"
 			},
-			"language":{
-				"options": [{"icon": "translate", "option": l} for l in self.text.available()],
-				"fields": ["languageSelection"],
-				"context": "languageDropdown"
+			"surveyLanguage":{
+				"options": [{"icon": "translate", "option": l} for l in self.text.available("survey")],
+				"fields": ["surveyLanguageSelection"],
+				"context": "surveyLanguageDropdown"
+			},
+			"adminLanguage":{
+				"options": [{"icon": "translate", "option": l} for l in self.text.available("admin")],
+				"fields": ["adminLanguageSelection"],
+				"context": "adminLanguageDropdown"
 			}
 		}
 
-	def dropdown_generator(self, parameter):
+	def dropdown_generator(self, parameter, context):
+		con_text = getattr(self.text, context)
 		items = [
 			{
-				"text": self.text.get(i["content"]) if "content" in i else i["option"],
+				"text": con_text(i["content"]) if "content" in i else i["option"],
 				"content": i.get("content"),
 				"height": dp(64),
 				"viewclass": "IconListItem" if "icon" in i else None,
@@ -174,35 +182,37 @@ class CustomerSurveyApp(MDApp): # <- main class
 
 	def cancel_confirm_dialog_handler(self, *btnObj):
 		self.dialog.dismiss()
-		if btnObj[0].text == self.text.get("confirmReset"):
+		if btnObj[0].text == self.text.admin("confirmReset"):
 			self.database.clear(["CS", "SETTING"])
 			self.notif(self.text.get("resetMessage"))
 
-	def translate(self, lang):
-		self.text.selectedLanguage = lang 
-		self.database.write("SETTING", {"KEY": "language", "VALUE": lang}, {"KEY": "language"})
-		for element in self.text.elements:
+	def translate(self, lang, context):
+		for element in self.text.elements[context]:
 			try:
 				# not all language chunks have their respective id'd counterparts like
 				# * dropdown-objects detailratingGood, -Meh and -Bad
 				obj = self.screen.ids[element]
 				if hasattr(obj, "hint_text") and obj.hint_text:
-					obj.hint_text = self.text.elements[element][lang]
+					obj.hint_text = self.text.elements[context][element][lang]
 				elif hasattr(obj, "text") and obj.text:
-					obj.text = self.text.elements[element][lang]
+					obj.text = self.text.elements[context][element][lang]
 			except:
 				continue
-		# exceptions for dropdowns
-		dropdown_options=self.dropdown_options()
-		for field in dropdown_options["rating"]["fields"]:
-			self.screen.ids[field].text = self.text.elements["detailratingSelect"][lang]
-			self.ratingDropdown[field].items = [dict(
-				item,
-				**{"text": self.text.elements[item["content"]][lang]} if item["content"] else {},
-				**{"on_release": lambda x = (field, self.text.elements[item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
-				) for item in self.ratingDropdown[field].items]
+		if context=="survey":
+			self.text.currentSurveyLanguage = lang
+			# exceptions for dropdowns
+			dropdown_options=self.dropdown_options()
+			for field in dropdown_options["rating"]["fields"]:
+				self.screen.ids[field].text = self.text.elements[context]["detailratingSelect"][lang]
+				self.surveyRatingDropdown[field].items = [dict(
+					item,
+					**{"text": self.text.elements[context][item["content"]][lang]} if item["content"] else {},
+					**{"on_release": lambda x = (field, self.text.elements[context][item["content"]][lang], dropdown_options["rating"]["context"]): self.select_dropdown_item(x[0], x[1], x[2])} if item["content"] else {}
+					) for item in self.surveyRatingDropdown[field].items]
+		else:
+			self.text.adminLanguage = lang
 		# exception for toolbar
-		self.screen.ids["toolbar"].title=self.text.get("menuSurvey" if self.screen.children[0].children[1].current == "surveyScreen" else "menuAdmin")
+		self.screen.ids["toolbar"].title=self.text.survey("menuSurvey" if self.screen.children[0].children[1].current == "surveyScreen" else "menuAdmin")
 
 	def timeout_handler(self, event = None):
 		if self.timeout is not None:
@@ -218,6 +228,9 @@ class CustomerSurveyApp(MDApp): # <- main class
 		self.save_inputs()
 		self.initialRating = None
 		self.session = "NULL"
+		if self.text.currentSurveyLanguage != self.text.defaultSurveyLanguage:
+			self.text.currentSurveyLanguage = self.text.defaultSurveyLanguage
+			self.translate(self.text.currentSurveyLanguage, "survey")
 		sc=self.screen.children[0].children[1].children[0].children[0]
 		sc.load_slide(sc.slides[0])
 
@@ -234,18 +247,20 @@ class CustomerSurveyApp(MDApp): # <- main class
 				"SERVICE": self.screen.ids["service"].text if self.screen.ids["service"].text else "NULL"
 				}
 			dropdown_options = self.dropdown_options()
-			grades = [self.text.get("detailratingBad"), self.text.get("detailratingMeh"), self.text.get("detailratingGood")]
+			grades = [self.text.survey("detailratingBad"), self.text.survey("detailratingMeh"), self.text.survey("detailratingGood")]
 			for i, field in enumerate(dropdown_options["rating"]["fields"]):
 				if self.screen.ids[field].text in grades:
 					key_value[f'RATING{i}'] = grades.index(self.screen.ids[field].text)
 			self.session = self.database.write("CS", key_value, {"ID": self.session})
 		else:
-			self.notif(self.text.get("missingRateNotif"))
+			self.notif(self.text.survey("missingRateNotif"))
 
 	def save_setting(self, key, value):
 		sanitize={
 			"default": lambda x: int(x),
 			"password": lambda x: x.strip(),
+			"surveylanguage": lambda x: x.strip(),
+			"adminlanguage": lambda x: x.strip(),
 			"topbar": lambda x: int(float(x)) if 7 < int(float(x)) < 16 else 10,
 			"timeout": lambda x: int(x) if int(x) > 5 else 5 # even though this fallback is rather short
 		}
@@ -264,16 +279,16 @@ class CustomerSurveyApp(MDApp): # <- main class
 
 	def export(self, type="rtf"):
 		if type=="rtf":
-			if not self.database.rtf(self.text.selectedLanguage):
-				self.notif(f"{self.text.get('rtfFail')} {self.database.status}")
+			if not self.database.rtf(self.text.adminLanguage):
+				self.notif(f"{self.text.admin('rtfFail')} {self.database.status}")
 				return
-			self.notif(f"{self.text.get('rtfSuccess')} {self.database.status}")
+			self.notif(f"{self.text.admin('rtfSuccess')} {self.database.status}")
 			return
 		elif type=="csv":
 			if not self.database.csv():
-				self.notif(f"{self.text.get('csvFail')} {self.database.status}")
+				self.notif(f"{self.text.admin('csvFail')} {self.database.status}")
 				return
-			self.notif(f"{self.text.get('csvSuccess')} {self.database.status}")
+			self.notif(f"{self.text.admin('csvSuccess')} {self.database.status}")
 			return
 
 	def on_stop(self):

@@ -58,13 +58,13 @@
 		size_hint: 1,1
 		OneLineListItem:
 			id: menuSurvey
-			text: app.text.get("menuSurvey")
+			text: app.text.survey("menuSurvey")
 			on_press:
 				root.nav_drawer.set_state("close")
 				root.screen_manager.current = "surveyScreen"
 		OneLineListItem:
 			id: menuAdmin
-			text: app.text.get("menuAdmin")
+			text: app.text.survey("menuAdmin")
 			on_press:
 				root.nav_drawer.set_state("close")
 				root.screen_manager.current = "adminScreen"
@@ -73,7 +73,7 @@ MDScreen:
 	on_touch_down: app.timeout_handler()
 	MDTopAppBar:
 		id: toolbar
-		title: app.text.get("menuSurvey" if screen_manager.current == "surveyScreen" else "menuAdmin")
+		title: app.text.survey("menuSurvey" if screen_manager.current == "surveyScreen" else "menuAdmin")
 		size_hint: 1, app.layout["topbar"]
 		padding: (app.layout["left"], app.layout["top"], app.layout["right"], 0)
 		elevation: 0
@@ -102,7 +102,7 @@ MDScreen:
 					ScreenLayout:
 						TopLabel:
 							id: welcomeLabel
-							text: app.text.get("welcomeLabel")
+							text: app.text.survey("welcomeLabel")
 						IconButton:
 							icon: "emoticon-happy-outline"
 							icon_color: (0,.5,0,1)
@@ -119,99 +119,99 @@ MDScreen:
 							on_release: app.initialRating = 0
 							on_release: surveyCarousel.load_next()
 						Dropdown:
-							id: languageSelection
-							text: app.text.selectedLanguage
-							on_release: app.languageDropdown["languageSelection"].open()
-							on_text: app.translate(self.text)
+							id: surveyLanguageSelection
+							text: app.text.currentSurveyLanguage
+							on_release: app.surveyLanguageDropdown["surveyLanguageSelection"].open()
+							on_text: app.translate(self.text, "survey")
 					# initial gratitude and encouragement to continue
 					ScreenLayout:
 						TopLabel:
 							id: encouragementLabel
-							text: app.text.get("encouragementLabel")
+							text: app.text.survey("encouragementLabel")
 						MDScrollView:
 							MDLabel:
 								id: encouragementText
-								text: app.text.get("encouragementText")
+								text: app.text.survey("encouragementText")
 						MDFillRoundFlatIconButton:
 							id: encouragementYes
 							icon: "thumb-up-outline"
-							text: app.text.get("encouragementYes")
+							text: app.text.survey("encouragementYes")
 							on_release: surveyCarousel.load_next()
 						MDFillRoundFlatIconButton:
 							id: encouragementNo
 							icon: "exit-to-app"
-							text: app.text.get("encouragementNo")
+							text: app.text.survey("encouragementNo")
 							on_release: surveyCarousel.load_slide(surveyCarousel.slides[len(surveyCarousel.slides)-1])
 					# 4 more specific questions
 					ScreenLayout:
 						TopLabel:
 							id: detailratingLabel
-							text: app.text.get("detailratingLabel")
+							text: app.text.survey("detailratingLabel")
 						TwoColumns:
 							DropdownLabel:
 								id: detailratingAvailability
-								text: app.text.get("detailratingAvailability")
+								text: app.text.survey("detailratingAvailability")
 							Dropdown:
 								id: detailratingQone
-								text: app.text.get("detailratingSelect")
-								on_release: app.ratingDropdown["detailratingQone"].open()
+								text: app.text.survey("detailratingSelect")
+								on_release: app.surveyRatingDropdown["detailratingQone"].open()
 							DropdownLabel:
 								id: detailratingProcessing
-								text: app.text.get("detailratingProcessing")
+								text: app.text.survey("detailratingProcessing")
 							Dropdown:
 								id: detailratingQtwo
-								text: app.text.get("detailratingSelect")
-								on_release: app.ratingDropdown["detailratingQtwo"].open()
+								text: app.text.survey("detailratingSelect")
+								on_release: app.surveyRatingDropdown["detailratingQtwo"].open()
 							DropdownLabel:
 								id: detailratingExpertise
-								text: app.text.get("detailratingExpertise")
+								text: app.text.survey("detailratingExpertise")
 							Dropdown:
 								id: detailratingQthree
-								text: app.text.get("detailratingSelect")
-								on_release: app.ratingDropdown["detailratingQthree"].open()
+								text: app.text.survey("detailratingSelect")
+								on_release: app.surveyRatingDropdown["detailratingQthree"].open()
 							DropdownLabel:
 								id: detailratingKindness
-								text: app.text.get("detailratingKindness")
+								text: app.text.survey("detailratingKindness")
 							Dropdown:
 								id: detailratingQfour
-								text: app.text.get("detailratingSelect")
-								on_release: app.ratingDropdown["detailratingQfour"].open()
+								text: app.text.survey("detailratingSelect")
+								on_release: app.surveyRatingDropdown["detailratingQfour"].open()
 						TwoColumns:
 					# specificially good
 					ScreenLayout:
 						TopLabel:
 							id: commendationLabel
-							text: app.text.get("commendationLabel")
+							text: app.text.survey("commendationLabel")
 						Textfield:
 							id: commendation
-							hint_text: app.text.get("textHint")
+							hint_text: app.text.survey("textHint")
 							multiline: True
 							size_hint: 1, 1
 					# specificially bad
 					ScreenLayout:
 						TopLabel:
 							id: suggestionLabel
-							text: app.text.get("suggestionLabel")
+							text: app.text.survey("suggestionLabel")
 						Textfield:
 							id: suggestion
-							hint_text: app.text.get("textHint")
+							hint_text: app.text.survey("textHint")
 							multiline: True
 							size_hint: 1, 1
 					# received service
 					ScreenLayout:
 						TopLabel:
 							id: serviceLabel
-							text: app.text.get("serviceLabel")
+							text: app.text.survey("serviceLabel")
 						Textfield:
 							id: service
-							hint_text: app.text.get("textHint")
+							hint_text: app.text.survey("textHint")
 							multiline: True
 							size_hint: 1, 1
 					# final gratitude
 					ScreenLayout:
 						TopLabel:
 							id: thankyouLabel
-							text: app.text.get("thankyouLabel")
+							text: app.text.survey("thankyouLabel")
 						IconButton:
 							icon: "heart"
 							size_hint: 1, 1
@@ -219,7 +219,7 @@ MDScreen:
 						MDFillRoundFlatIconButton:
 							id: thankyouRestart
 							icon: "restart"
-							text: app.text.get("thankyouRestart")
+							text: app.text.survey("thankyouRestart")
 							on_release: app.restart()
 							on_release: surveyCarousel.load_slide(surveyCarousel.slides[0])
 			MDScreen:
@@ -230,76 +230,108 @@ MDScreen:
 					# set password on init, export, reset
 					ScreenLayout:
 						MDLabel:
-							text: app.database.status if app.database.status else app.text.get("initMessage") if not app.database.password else ""
+							text: app.database.status if app.database.status else app.text.admin("initMessage") if not app.database.password else ""
 						MDTextField:
 							id: adminPass
-							hint_text: app.text.get("adminPass")
+							hint_text: app.text.admin("adminPass")
 							password: bool(app.database.password)
 						MDFillRoundFlatIconButton:
 							id: buttonPassword
 							icon: "key-variant"
-							text: app.text.get("buttonPassword")
+							text: app.text.admin("buttonPassword")
 							disabled: bool(app.database.password)
 							on_release: adminPass.text = "" if app.save_setting("password", adminPass.text) else adminPass.text
-							on_release: app.notif(app.text.get("resetMessage"))
+							on_release: app.notif(app.text.admin("resetMessage"))
 						MDFillRoundFlatIconButton:
 							id: buttonRtfExport
 							icon: "file-document-outline"
-							text: app.text.get("buttonRtfExport")
+							text: app.text.admin("buttonRtfExport")
 							disabled: adminPass.text != app.database.password or not app.database.password
 							on_release: app.export("rtf")
 							on_release: adminPass.text = ""
 						MDFillRoundFlatIconButton:
 							id: buttonCsvExport
 							icon: "file-table-outline"
-							text: app.text.get("buttonCsvExport")
+							text: app.text.admin("buttonCsvExport")
 							disabled: adminPass.text != app.database.password or not app.database.password
 							on_release: app.export("csv")
 							on_release: adminPass.text = ""
 						MDFillRoundFlatIconButton:
 							id: buttonReset
 							icon: "delete-forever-outline"
-							text: app.text.get("buttonReset")
+							text: app.text.admin("buttonReset")
 							disabled: adminPass.text != app.database.password or not app.database.password
-							on_release: app.cancel_confirm_dialog(app.text.get("buttonReset"), app.text.get("cancelReset"), app.text.get("confirmReset"))
+							on_release: app.cancel_confirm_dialog(app.text.admin("buttonReset"), app.text.admin("cancelReset"), app.text.admin("confirmReset"))
 							on_release: adminPass.text = ""
 					ScreenLayout:
-						#set timeout and margins
+						#set timeout and defaults
 						MDTextField:
 							id: adminPassTwo
-							hint_text: app.text.get("adminPass")
+							hint_text: app.text.admin("adminPass")
 							password: True
+						TwoColumns:
+							size_hint: 1, None
+							DropdownLabel:
+								id: surveyLanguageSelectionLabel
+								text: app.text.admin("surveyLanguageSelectionLabel")
+							Dropdown:
+								id: surveyLanguageSelection
+								text: app.text.defaultSurveyLanguage
+								on_release: app.surveyLanguageDropdown["surveyLanguageSelection"].open()
+								on_text: app.translate(self.text, "survey")
+							DropdownLabel:
+								id: adminLanguageSelectionLabel
+								text: app.text.admin("adminLanguageSelectionLabel")
+							Dropdown:
+								id: adminLanguageSelection
+								text: app.text.adminLanguage
+								on_release: app.adminLanguageDropdown["adminLanguageSelection"].open()
+								on_text: app.translate(self.text, "admin")
 						MDTextField:
 							id: adminTimeout
-							hint_text: app.text.get("adminTimeout")
+							hint_text: app.text.admin("adminTimeout")
 							text: str(app.timeoutSeconds)
+						MDFillRoundFlatIconButton:
+							id: adminSave
+							icon: "content-save-outline"
+							text: app.text.admin("adminSave")
+							disabled: adminPassTwo.text != app.database.password
+							on_release: adminPassTwo.text = ""
+							on_release: adminTimeout.text = app.save_setting("timeout", adminTimeout.text)
+							on_release: adminTimeout.text = app.save_setting("surveylanguage", surveyLanguageSelection.text)
+							on_release: adminTimeout.text = app.save_setting("adminlanguage", adminLanguageSelection.text)
+					ScreenLayout:
+						#set margins
+						MDTextField:
+							id: adminPassThree
+							hint_text: app.text.admin("adminPass")
+							password: True
 						MDTextField:
 							id: adminScreenTopBarPercent
-							hint_text: app.text.get("adminScreenTopBarPercent")
+							hint_text: app.text.admin("adminScreenTopBarPercent")
 							text: str(int(app.layout["topbar"] * 100))
 						MDTextField:
 							id: adminScreenPaddingLeft
-							hint_text: app.text.get("adminScreenPaddingLeft")
+							hint_text: app.text.admin("adminScreenPaddingLeft")
 							text: str(app.layout["left"])
 						MDTextField:
 							id: adminScreenPaddingTop
-							hint_text: app.text.get("adminScreenPaddingTop")
+							hint_text: app.text.admin("adminScreenPaddingTop")
 							text: str(app.layout["top"])
 						MDTextField:
 							id: adminScreenPaddingRight
-							hint_text: app.text.get("adminScreenPaddingRight")
+							hint_text: app.text.admin("adminScreenPaddingRight")
 							text: str(app.layout["right"])
 						MDTextField:
 							id: adminScreenPaddingBottom
-							hint_text: app.text.get("adminScreenPaddingBottom")
+							hint_text: app.text.admin("adminScreenPaddingBottom")
 							text: str(app.layout["bottom"])
 						MDFillRoundFlatIconButton:
 							id: adminSave
 							icon: "content-save-outline"
-							text: app.text.get("adminSave")
-							disabled: adminPassTwo.text != app.database.password
-							on_release: adminPassTwo.text = ""
-							on_release: adminTimeout.text = app.save_setting("timeout", adminTimeout.text)
+							text: app.text.admin("adminSave")
+							disabled: adminPassThree.text != app.database.password
+							on_release: adminPassThree.text = ""
 							on_release: adminScreenTopBarPercent.text = app.save_setting("topbar", adminScreenTopBarPercent.text)
 							on_release: adminScreenPaddingLeft.text = app.save_setting("paddingleft", adminScreenPaddingLeft.text)
 							on_release: adminScreenPaddingTop.text = app.save_setting("paddingtop", adminScreenPaddingTop.text)
@@ -310,7 +342,7 @@ MDScreen:
 						MDScrollView:
 							MDLabel:
 								id: devInfo
-								text: app.text.get("devInfo")
+								text: app.text.admin("devInfo")
 						MDRectangleFlatIconButton:
 							center_x: .5
 							text: "github.com/erroronline1/customersurvey.py"
