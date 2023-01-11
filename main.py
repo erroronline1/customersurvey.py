@@ -68,6 +68,8 @@ class CustomerSurveyApp(MDApp): # <- main class
 		surveylanguage = self.database.read(["VALUE"], "SETTING", {"KEY": "surveylanguage"})
 		adminlanguage = self.database.read(["VALUE"], "SETTING", {"KEY": "adminlanguage"})
 		self.text = Language(surveylanguage[0][0] if surveylanguage else None, adminlanguage[0][0] if adminlanguage else None)
+		resetLanguageonRestart = self.database.read(["VALUE"], "SETTING", {"KEY": "resetsurveylanguage"})
+		self.resetLanguage = (bool(int(resetLanguageonRestart[0][0])) if resetLanguageonRestart else True)
 		timeout = self.database.read(["VALUE"], "SETTING", {"KEY": "timeout"})
 		self.timeoutSeconds = int(timeout[0][0] if timeout else 30)
 		self.screen_adjustments()
@@ -228,7 +230,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 		self.save_inputs()
 		self.initialRating = None
 		self.session = "NULL"
-		if self.text.currentSurveyLanguage != self.text.defaultSurveyLanguage:
+		if self.resetLanguage and self.text.currentSurveyLanguage != self.text.defaultSurveyLanguage:
 			self.text.currentSurveyLanguage = self.text.defaultSurveyLanguage
 			self.translate(self.text.currentSurveyLanguage, "survey")
 		sc=self.screen.children[0].children[1].children[0].children[0]
@@ -261,6 +263,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 			"password": lambda x: x.strip(),
 			"surveylanguage": lambda x: x.strip(),
 			"adminlanguage": lambda x: x.strip(),
+			"resetsurveylanguage": lambda x: int(x),
 			"topbar": lambda x: int(float(x)) if 7 < int(float(x)) < 16 else 10,
 			"timeout": lambda x: int(x) if int(x) > 5 else 5 # even though this fallback is rather short
 		}

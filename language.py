@@ -187,9 +187,13 @@ class Language():
 				"english": "default survey langauge",
 				"deutsch": "Standardsprache Umfrage"
 			},
+			"surveyLanguageResetLabel":{
+				"english": "default langauge on restart",
+				"deutsch": "Standardsprache beim Neubeginn"
+			},
 			"adminLanguageSelectionLabel":{
 				"english": "default admin language",
-				"deutsch": "Standarsprache Auswertung"
+				"deutsch": "Standardsprache Auswertung"
 			},
 
 			"adminScreenTopBarPercent": {

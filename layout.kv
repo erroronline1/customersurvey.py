@@ -29,7 +29,8 @@
 	size_hint: 1,.7
 
 <TwoColumns@MDGridLayout>
-	size_hint: 1,.4
+	size_hint: 1, None
+	height: self.minimum_height
 	pos_hint: {'center': (.5, .5)}
 	cols: 2
 	spacing: [10,20]
@@ -148,6 +149,7 @@ MDScreen:
 							id: detailratingLabel
 							text: app.text.survey("detailratingLabel")
 						TwoColumns:
+							size_hint: 1 ,.4
 							DropdownLabel:
 								id: detailratingAvailability
 								text: app.text.survey("detailratingAvailability")
@@ -177,6 +179,7 @@ MDScreen:
 								text: app.text.survey("detailratingSelect")
 								on_release: app.surveyRatingDropdown["detailratingQfour"].open()
 						TwoColumns:
+							size_hint: 1 ,.4
 					# specificially good
 					ScreenLayout:
 						TopLabel:
@@ -269,8 +272,11 @@ MDScreen:
 							id: adminPassTwo
 							hint_text: app.text.admin("adminPass")
 							password: True
+						MDTextField:
+							id: adminTimeout
+							hint_text: app.text.admin("adminTimeout")
+							text: str(app.timeoutSeconds)
 						TwoColumns:
-							size_hint: 1, None
 							DropdownLabel:
 								id: surveyLanguageSelectionLabel
 								text: app.text.admin("surveyLanguageSelectionLabel")
@@ -280,6 +286,12 @@ MDScreen:
 								on_release: app.surveyLanguageDropdown["surveyLanguageSelection"].open()
 								on_text: app.translate(self.text, "survey")
 							DropdownLabel:
+								id: surveyLanguageResetLabel
+								text: app.text.admin("surveyLanguageResetLabel")
+							MDSwitch:
+								id: surveyLanguageReset
+								active: app.resetLanguage
+							DropdownLabel:
 								id: adminLanguageSelectionLabel
 								text: app.text.admin("adminLanguageSelectionLabel")
 							Dropdown:
@@ -287,10 +299,6 @@ MDScreen:
 								text: app.text.adminLanguage
 								on_release: app.adminLanguageDropdown["adminLanguageSelection"].open()
 								on_text: app.translate(self.text, "admin")
-						MDTextField:
-							id: adminTimeout
-							hint_text: app.text.admin("adminTimeout")
-							text: str(app.timeoutSeconds)
 						MDFillRoundFlatIconButton:
 							id: adminSave
 							icon: "content-save-outline"
@@ -298,8 +306,10 @@ MDScreen:
 							disabled: adminPassTwo.text != app.database.password
 							on_release: adminPassTwo.text = ""
 							on_release: adminTimeout.text = app.save_setting("timeout", adminTimeout.text)
-							on_release: adminTimeout.text = app.save_setting("surveylanguage", surveyLanguageSelection.text)
-							on_release: adminTimeout.text = app.save_setting("adminlanguage", adminLanguageSelection.text)
+							on_release: app.save_setting("surveylanguage", surveyLanguageSelection.text)
+							on_release: app.save_setting("resetsurveylanguage", surveyLanguageReset.active)
+							on_release: app.resetLanguage = surveyLanguageReset.active
+							on_release: app.save_setting("adminlanguage", adminLanguageSelection.text)
 					ScreenLayout:
 						#set margins
 						MDTextField:
