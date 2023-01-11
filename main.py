@@ -60,18 +60,19 @@ class CustomerSurveyApp(MDApp): # <- main class
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
-		self.theme_cls.theme_style = "Light"
-		self.theme_cls.primary_palette = "Teal"
 		self.storage_path = platform_handler()
 		self.database = database.DataBase(os.path.join( self.storage_path["app"], "CustomerSurvey.db"), os.path.join(self.storage_path["primary_external"], "CustomerSurveyReport"))
 
+		timeout = self.database.read(["VALUE"], "SETTING", {"KEY": "timeout"})
+		self.timeoutSeconds = int(timeout[0][0] if timeout else 30)
+		theme=self.database.read(["VALUE"], "SETTING", {"KEY": "theme"})
+		self.theme_cls.primary_palette = theme[0][0] if theme else self.theme_cls.primary_palette
 		surveylanguage = self.database.read(["VALUE"], "SETTING", {"KEY": "surveylanguage"})
 		adminlanguage = self.database.read(["VALUE"], "SETTING", {"KEY": "adminlanguage"})
 		self.text = Language(surveylanguage[0][0] if surveylanguage else None, adminlanguage[0][0] if adminlanguage else None)
 		resetLanguageonRestart = self.database.read(["VALUE"], "SETTING", {"KEY": "resetsurveylanguage"})
 		self.resetLanguage = (bool(int(resetLanguageonRestart[0][0])) if resetLanguageonRestart else True)
-		timeout = self.database.read(["VALUE"], "SETTING", {"KEY": "timeout"})
-		self.timeoutSeconds = int(timeout[0][0] if timeout else 30)
+
 		self.screen_adjustments()
 		self.screen = Builder.load_file("layout.kv")
 
@@ -84,6 +85,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 		self.surveyRatingDropdown = self.dropdown_generator(dropdown_options["rating"], "survey")
 		self.surveyLanguageDropdown = self.dropdown_generator(dropdown_options["surveyLanguage"], "survey")
 		self.adminLanguageDropdown = self.dropdown_generator(dropdown_options["adminLanguage"], "admin")
+		self.adminThemeDropdown = self.dropdown_generator(dropdown_options["theme"], "admin")
 		if not self.database.password:
 			self.screen.children[0].children[1].current = "adminScreen"
 		return self.screen
@@ -126,7 +128,12 @@ class CustomerSurveyApp(MDApp): # <- main class
 				"options": [{"icon": "translate", "option": l} for l in self.text.available("admin")],
 				"fields": ["adminLanguageSelection"],
 				"context": "adminLanguageDropdown"
-			}
+			},
+			"theme":{
+				"options": [{"icon": "palette", "option": l} for l in ["Red", "Pink", "Purple", "DeepPurple", "Indigo", "Blue", "LightBlue", "Cyan", "Teal", "Green", "LightGreen", "Lime", "Yellow", "Amber", "Orange", "DeepOrange", "Brown", "Gray", "BlueGray"]],
+				"fields": ["adminThemeSelection"],
+				"context": "adminThemeDropdown"
+			},			
 		}
 
 	def dropdown_generator(self, parameter, context):
@@ -261,6 +268,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 		sanitize={
 			"default": lambda x: int(x),
 			"password": lambda x: x.strip(),
+			"theme": lambda x: x.strip(),
 			"surveylanguage": lambda x: x.strip(),
 			"adminlanguage": lambda x: x.strip(),
 			"resetsurveylanguage": lambda x: int(x),

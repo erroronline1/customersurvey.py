@@ -278,6 +278,13 @@ MDScreen:
 							text: str(app.timeoutSeconds)
 						TwoColumns:
 							DropdownLabel:
+								id: adminThemeSelectionLabel
+								text: app.text.admin("adminThemeSelectionLabel")
+							Dropdown:
+								id: adminThemeSelection
+								text: app.theme_cls.primary_palette
+								on_release: app.adminThemeDropdown["adminThemeSelection"].open()
+							DropdownLabel:
 								id: surveyLanguageSelectionLabel
 								text: app.text.admin("surveyLanguageSelectionLabel")
 							Dropdown:
@@ -306,10 +313,12 @@ MDScreen:
 							disabled: adminPassTwo.text != app.database.password
 							on_release: adminPassTwo.text = ""
 							on_release: adminTimeout.text = app.save_setting("timeout", adminTimeout.text)
+							on_release: app.save_setting("theme", adminThemeSelection.text)
 							on_release: app.save_setting("surveylanguage", surveyLanguageSelection.text)
 							on_release: app.save_setting("resetsurveylanguage", surveyLanguageReset.active)
 							on_release: app.resetLanguage = surveyLanguageReset.active
 							on_release: app.save_setting("adminlanguage", adminLanguageSelection.text)
+							on_release: app.notif(app.text.admin("resetMessage"))
 					ScreenLayout:
 						#set margins
 						MDTextField:
@@ -347,6 +356,7 @@ MDScreen:
 							on_release: adminScreenPaddingTop.text = app.save_setting("paddingtop", adminScreenPaddingTop.text)
 							on_release: adminScreenPaddingRight.text = app.save_setting("paddingright", adminScreenPaddingRight.text)
 							on_release: adminScreenPaddingBottom.text = app.save_setting("paddingbottom", adminScreenPaddingBottom.text)
+							on_release: app.notif(app.text.admin("resetMessage"))
 					ScreenLayout:
 						# dev info
 						MDScrollView:

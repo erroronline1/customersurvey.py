@@ -183,6 +183,10 @@ class Language():
 				"english": "Timeout",
 				"deutsch": "Ablaufzeit"
 			},
+			"adminThemeSelectionLabel":{
+				"english": "theme",
+				"deutsch": "Farbe"
+			},
 			"surveyLanguageSelectionLabel":{
 				"english": "default survey langauge",
 				"deutsch": "Standardsprache Umfrage"
