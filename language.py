@@ -245,9 +245,9 @@ class Language():
 	}
 	def __init__(self, surveylanguage = None, adminlanguage = None):
 		# define selected langauge, defaults to first available language
-		self.defaultSurveyLanguage = surveylanguage if surveylanguage else self.available("survey")[0]
+		self.defaultSurveyLanguage = surveylanguage if surveylanguage in self.available("survey") else self.available("survey")[0]
 		self.currentSurveyLanguage = surveylanguage if surveylanguage else self.available("survey")[0]
-		self.adminLanguage = adminlanguage if adminlanguage else self.available("admin")[0]
+		self.adminLanguage = adminlanguage if adminlanguage in self.available("admin") else self.available("admin")[0]
 	def available(self, what):
 		# tuple of all defined languages for what
 		return tuple(key for key in self.elements[what][random.choice(list(self.elements[what].keys()))])
