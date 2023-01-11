@@ -2,6 +2,7 @@
 import sqlite3
 from language import Language
 import csv
+from datetime import datetime
 
 class DataBase():
 	tableFields = {
@@ -106,7 +107,9 @@ class DataBase():
 
 	def csv(self):
 		try:
-			with open(self.exportPath + ".csv", 'w', newline='') as csvfile:
+			now = datetime.now()
+			timestamp = now.strftime("%Y-%m-%d_%H-%M")
+			with open(f"{self.exportPath}_{timestamp}.csv", 'w', newline='') as csvfile:
 				writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 				# add reduced header
 				writer.writerow('"'+str(column)+'"' for column in self.tableFields['CS'])
@@ -130,13 +133,13 @@ class DataBase():
 
 	def rtf(self, language):
 		# create a report
-		text = Language(language)
-		rtfHead = text.get("rtfHead")
-		rtfTotal = text.get("rtfTotal")
-		rtfDetail = text.get("rtfDetail")
-		rtfTextInput = text.get("rtfTextInput")
-		rtfCommendation = text.get("commendationLabel")
-		rtfSuggestion = text.get("suggestionLabel")
+		text = Language(language, language)
+		rtfHead = text.admin("rtfHead")
+		rtfTotal = text.admin("rtfTotal")
+		rtfDetail = text.admin("rtfDetail")
+		rtfTextInput = text.admin("rtfTextInput")
+		rtfCommendation = text.survey("commendationLabel")
+		rtfSuggestion = text.survey("suggestionLabel")
 
 		output = "{\\rtf1 \\ansi\\ansicpg1252\\deff0\\nouicompat "
 
@@ -153,7 +156,7 @@ class DataBase():
 		output += f"\line {rtfTotal[1]} {result[0]} {rtfTotal[2]} {result[1]} {rtfTotal[3]} {result[2]} {rtfTotal[4]} {round(result[3]*50, 2)} % \par "
 		
 		# topic related statistics
-		details = [text.get("detailratingAvailability"), text.get("detailratingProcessing"), text.get("detailratingExpertise"), text.get("detailratingKindness")]
+		details = [text.survey("detailratingAvailability"), text.survey("detailratingProcessing"), text.survey("detailratingExpertise"), text.survey("detailratingKindness")]
 		for i, detail in enumerate(details):
 			cursor.execute(f"SELECT MIN(DATE) AS zero, MAX(DATE) AS one, COUNT(ID) AS two, AVG(RATING{i}) AS three FROM CS WHERE RATING{i} IS NOT NULL;")
 			result = cursor.fetchall()
@@ -165,7 +168,7 @@ class DataBase():
 			output += f"\line {rtfDetail[1]} {result[0]} {rtfDetail[2]} {result[1]} {rtfDetail[3]} {result[2]} {rtfDetail[4]} {round(result[3]*50, 2)if result[3] else None} %"
 
 		# customer text inputs
-		rating = [text.get("detailratingBad"), text.get("detailratingMeh"), text.get("detailratingGood")]
+		rating = [text.survey("detailratingBad"), text.survey("detailratingMeh"), text.survey("detailratingGood")]
 		output += f"\par \line {{\\b {rtfTextInput[0]}}} "
 		cursor.execute("SELECT * FROM CS WHERE COMMENDATION IS NOT NULL OR SUGGESTION IS NOT NULL OR SERVICE IS NOT NULL;")
 		result = cursor.fetchall()
@@ -179,10 +182,11 @@ class DataBase():
 				for i, detail in enumerate(details):
 					output += f"{detail}: {rating[r[3+i]]} / " if r[3+i] != None else ""
 				output += f"{rtfTextInput[1]}: {rating[r[2]]} "
-		
 		output +="}"
 		try:
-			with open(self.exportPath + ".rtf", 'w', newline = '') as rtfFile:
+			now = datetime.now()
+			timestamp = now.strftime("%Y-%m-%d_%H-%M")
+			with open(f"{self.exportPath}_{timestamp}.rtf", 'w', newline = '') as rtfFile:
 				rtfFile.write(output)
 			self.status = self.exportPath + ".rtf"
 			return True
