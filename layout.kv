@@ -315,7 +315,7 @@ MDScreen:
 							on_release: adminPassTwo.text = ""
 							on_release: adminTimeout.text = app.save_setting("timeout", adminTimeout.text)
 							on_release: app.save_setting("theme", adminThemeSelection.text)
-							on_release: app.save_setting("surveylanguage", surveyLanguageSelection.text)
+							on_release: app.save_setting("surveylanguage", adminSurveyLanguageSelection.text)
 							on_release: app.save_setting("resetsurveylanguage", surveyLanguageReset.active)
 							on_release: app.resetLanguage = surveyLanguageReset.active
 							on_release: app.save_setting("adminlanguage", adminLanguageSelection.text)
