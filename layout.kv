@@ -120,9 +120,9 @@ MDScreen:
 							on_release: app.initialRating = 0
 							on_release: surveyCarousel.load_next()
 						Dropdown:
-							id: surveyLanguageSelection
+							id: surveySurveyLanguageSelection
 							text: app.text.currentSurveyLanguage
-							on_release: app.surveyLanguageDropdown["surveyLanguageSelection"].open()
+							on_release: app.surveySurveyLanguageDropdown["surveySurveyLanguageSelection"].open()
 							on_text: app.translate(self.text, "survey")
 					# initial gratitude and encouragement to continue
 					ScreenLayout:
@@ -289,9 +289,9 @@ MDScreen:
 								id: surveyLanguageSelectionLabel
 								text: app.text.admin("surveyLanguageSelectionLabel")
 							Dropdown:
-								id: surveyLanguageSelection
+								id: adminSurveyLanguageSelection
 								text: app.text.defaultSurveyLanguage
-								on_release: app.surveyLanguageDropdown["surveyLanguageSelection"].open()
+								on_release: app.adminSurveyLanguageDropdown["adminSurveyLanguageSelection"].open()
 								on_text: app.translate(self.text, "survey")
 							DropdownLabel:
 								id: surveyLanguageResetLabel
