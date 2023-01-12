@@ -243,6 +243,7 @@ MDScreen:
 							icon: "key-variant"
 							text: app.text.admin("buttonPassword")
 							disabled: bool(app.database.password)
+							opacity: int(not bool(app.database.password))
 							on_release: adminPass.text = "" if app.save_setting("password", adminPass.text) else adminPass.text
 							on_release: app.notif(app.text.admin("resetMessage"))
 						MDFillRoundFlatIconButton:
