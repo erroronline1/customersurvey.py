@@ -7,104 +7,127 @@ class Language():
 		"survey":{
 			"menuSurvey": {
 				"english": "Survey",
-				"deutsch": "Umfrage"
+				"deutsch": "Umfrage",
+				"русский": "Опрос",
 			},
 			"menuAdmin": {
 				"english": "Settings",
-				"deutsch": "Einstellungen"
+				"deutsch": "Einstellungen",
+				"русский": "Настройки",
 			},
 
 			"welcomeLabel": {
 				"english": "How satisfied are you with us?",
-				"deutsch": "Wie zufrieden sind Sie mit uns?"
+				"deutsch": "Wie zufrieden sind Sie mit uns?",
+				"русский": "Насколько вы довольны нами?",
 			},
 
 			"missingRateNotif":{
 				"english": "Please provide you general opinion :)",
-				"deutsch": "Bitte geben Sie ihren Gesamteindruck an :)"
+				"deutsch": "Bitte geben Sie ihren Gesamteindruck an :)",
+				"русский": "Пожалуйста, укажите ваше общее впечатление :)",
 			},
 
 			"encouragementLabel": {
 				"english": "Thank you for your opinion!",
-				"deutsch": "Danke für Ihre Meinung!"
+				"deutsch": "Danke für Ihre Meinung!",
+				"русский": "Спасибо за ваше мнение!",
 			},
 			"encouragementText": {
 				"english": "We would be glad if you take a little more of your time. Do you mind answering a few more questions? Of course all statements are optional!",
-				"deutsch": "Wir freuen uns, wenn Sie noch einen kleinen Moment Zeit für uns haben. Beantworten Sie uns noch ein paar Fragen? Alle Angaben sind selbstverständlich freiwillig!"
+				"deutsch": "Wir freuen uns, wenn Sie noch einen kleinen Moment Zeit für uns haben. Beantworten Sie uns noch ein paar Fragen? Alle Angaben sind selbstverständlich freiwillig!",
+				"русский": "Мы будем рады, если вы уделите нам несколько минут. Не могли бы вы ответить еще на несколько вопросов? Вся информация, разумеется, является добровольной!",
 			},
 			"encouragementYes": {
 				"english": "yes of course",
-				"deutsch": "ja klar"
+				"deutsch": "ja klar",
+				"русский": "Да конечно",
 			},
 			"encouragementNo": {
 				"english": "no thank you",
-				"deutsch": "nein danke"
+				"deutsch": "nein danke",
+				"русский": "Нет, спасибо",
 			},
 
 			"detailratingLabel": {
 				"english": "How did you experience your treatment?",
-				"deutsch": "Wie empfanden Sie die Versorgung mit Ihrem Hilfsmittel?"
+				"deutsch": "Wie empfanden Sie die Versorgung mit Ihrem Hilfsmittel?",
+				"русский": "Что вы думаете о поставках вашей помощи?",
 			},
 			"detailratingAvailability": {
 				"english": "Staff availability",
-				"deutsch": "Erreichbarkeit"
+				"deutsch": "Erreichbarkeit",
+				"русский": "Доступность",
 			},
 			"detailratingProcessing": {
 				"english": "Processing time",
-				"deutsch": "Bearbeitungszeit"
+				"deutsch": "Bearbeitungszeit",
+				"русский": "Время обработки",
 			},
 			"detailratingExpertise": {
 				"english": "Expertise",
-				"deutsch": "Kompetenz"
+				"deutsch": "Kompetenz",
+				"русский": "Компетенция",
 			},
 			"detailratingKindness": {
 				"english": "Kindness",
-				"deutsch": "Freundlichkeit"
+				"deutsch": "Freundlichkeit",
+				"русский": "Дружелюбие",
 			},
 			"detailratingGood": {
 				"english": "good",
-				"deutsch": "gut"
+				"deutsch": "gut",
+				"русский": "отличный",
 			},
 			"detailratingMeh": {
 				"english": "meh",
-				"deutsch": "so la la"
+				"deutsch": "so la la",
+				"русский": "посредственный",
 			},
 			"detailratingBad": {
 				"english": "bad",
-				"deutsch": "schlecht"
+				"deutsch": "schlecht",
+				"русский": "плохой",
 			},
 			"detailratingSelect": {
 				"english": "rate",
-				"deutsch": "bewerten"
+				"deutsch": "bewerten",
+				"русский": "оценить",
 			},
 
 			"commendationLabel": {
 				"english": "What has been positive?",
-				"deutsch": "Was hat Ihnen gefallen?"
+				"deutsch": "Was hat Ihnen gefallen?",
+				"русский": "Что вам понравилось?",
 			},
 
 			"suggestionLabel": {
 				"english": "How can we improve?",
-				"deutsch": "Was können wir besser machen?"
+				"deutsch": "Was können wir besser machen?",
+				"русский": "Что мы можем сделать лучше?",
 			},
 
 			"serviceLabel": {
 				"english": "Which aid did you receive?",
-				"deutsch": "Welches Hilfsmittel haben Sie von uns erhalten?"
+				"deutsch": "Welches Hilfsmittel haben Sie von uns erhalten?",
+				"русский": "Какую помощь вы получили от нас?",
 			},
 
 			"textHint":{
 				"english": "Text",
-				"deutsch": "Text"
+				"deutsch": "Text",
+				"русский": "Текст",
 			},
 
 			"thankyouLabel": {
 				"english": "Thank you for your time!",
-				"deutsch": "Vielen Dank für Ihre Zeit!"
+				"deutsch": "Vielen Dank für Ihre Zeit!",
+				"русский": "Большое спасибо за уделенное время!",
 			},
 			"thankyouRestart": {
 				"english": "restart",
-				"deutsch": "von vorne"
+				"deutsch": "von vorne",
+				"русский": "с фронта",
 			},
 		},
 		"admin": {
@@ -228,25 +251,23 @@ class Language():
 			"devInfo": {
 				"english": '''customer survey by error on line 1 (erroronline.one)
 
-	cloudless, privacy oriented.
+cloudless, privacy oriented.
 
-	inputs are exclusively stored locally on the device and can be exported as a report.
-	the display can be adapted to possible frames of tablet stands through the settings. changes are verified by the initial set password.
-	''',
+inputs are exclusively stored locally.
+''',
 				"deutsch": '''Kundenumfrage von error on line 1 (erroronline.one)
 
-	Cloudlos, datenschutzorientiert.
+Cloudlos, datenschutzorientiert.
 
-	Eingaben werden ausschließlich lokal auf dem Gerät gespeichert und können als Auswertung exportiert werden.
-	Über die Einstellungen kann die Darstellung an eventuelle Ränder von Tablet-Ständern angepasst werden. Änderungen werden durch das ursprünglich eingegebene Kennwort verifiziert.
-	'''
+Eingaben werden ausschließlich lokal auf dem Gerät gespeichert.
+'''
 			},
 		}
 	}
 	def __init__(self, surveylanguage = None, adminlanguage = None):
 		# define selected langauge, defaults to first available language
 		self.defaultSurveyLanguage = surveylanguage if surveylanguage in self.available("survey") else self.available("survey")[0]
-		self.currentSurveyLanguage = surveylanguage if surveylanguage else self.available("survey")[0]
+		self.currentSurveyLanguage = self.defaultSurveyLanguage
 		self.adminLanguage = adminlanguage if adminlanguage in self.available("admin") else self.available("admin")[0]
 	def available(self, what):
 		# tuple of all defined languages for what
