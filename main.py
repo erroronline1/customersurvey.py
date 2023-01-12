@@ -193,7 +193,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 		self.dialog.dismiss()
 		if btnObj[0].text == self.text.admin("confirmReset"):
 			self.database.clear(["CS", "SETTING"])
-			self.notif(self.text.get("resetMessage"))
+			self.notif(self.text.admin("resetMessage"))
 
 	def translate(self, lang, context):
 		for element in self.text.elements[context]:
@@ -235,11 +235,18 @@ class CustomerSurveyApp(MDApp): # <- main class
 		if self.screen.children[0].children[1].current == "adminScreen":
 			return
 		self.save_inputs()
+		# reset all values and fields
 		self.initialRating = None
 		self.session = "NULL"
+		for field in self.dropdown_options()["rating"]["fields"]:
+			self.screen.ids[field].text = self.text.survey("detailratingSelect")
+		for field in ["commendation", "suggestion", "service"]:
+			self.screen.ids[field].text = ""
+
 		if self.resetLanguage and self.text.currentSurveyLanguage != self.text.defaultSurveyLanguage:
 			self.text.currentSurveyLanguage = self.text.defaultSurveyLanguage
 			self.translate(self.text.currentSurveyLanguage, "survey")
+		# goto initial slide
 		sc=self.screen.children[0].children[1].children[0].children[0]
 		sc.load_slide(sc.slides[0])
 
