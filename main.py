@@ -6,7 +6,6 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import StringProperty, ObjectProperty
 from kivy.core.window import Window
-from kivy import platform
 
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import OneLineIconListItem
@@ -17,33 +16,11 @@ from kivymd.uix.dialog import MDDialog
 from kivy.clock import Clock
 
 import os
-from pathlib import Path
 from datetime import datetime
 
 from language import Language
+from platformhandler import platform_handler
 import database
-
-def platform_handler():
-	if platform=="android":
-		# on android 10+ sqlite won't work on primary_external_storage_path
-		# although files can be written and read there.
-		# see https://github.com/Android-for-Python/Android-for-Python-Users#mediastore
-		# the database part.
-		from android.permissions import Permission, request_permissions, check_permission
-		from android.storage import app_storage_path, primary_external_storage_path
-		perms = [Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE]
-		def check_permissions(perms):
-			for perm in perms:
-				if check_permission(perm) != True:
-					return False
-			return True
-		if check_permissions(perms)!= True:
-			request_permissions(perms)    # get android permissions     
-			#exit()						# app has to be restarted; permissions will work on 2nd start		
-		return {"app": app_storage_path(), "primary_external":os.path.join(primary_external_storage_path(), "Documents")}
-	else:
-		Window.size = (400, 666) #1200x2000 samsung galaxy tab a7
-		return {"app": str(Path.home()), "primary_external":str(Path.home())}
 
 class IconListItem(OneLineIconListItem):
 	icon = StringProperty()
@@ -60,8 +37,9 @@ class CustomerSurveyApp(MDApp): # <- main class
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
-		self.storage_path = platform_handler()
-		self.database = database.DataBase(os.path.join( self.storage_path["app"], "CustomerSurvey.db"), os.path.join(self.storage_path["primary_external"], "CustomerSurveyReport"))
+
+		self.platform = platform_handler()
+		self.database = database.DataBase(os.path.join( self.platform.app_dir, "CustomerSurvey.db"))
 
 		timeout = self.database.read(["VALUE"], "SETTING", {"KEY": "timeout"})
 		self.timeoutSeconds = int(timeout[0][0] if timeout else 30)
@@ -73,6 +51,8 @@ class CustomerSurveyApp(MDApp): # <- main class
 		resetLanguageonRestart = self.database.read(["VALUE"], "SETTING", {"KEY": "resetsurveylanguage"})
 		self.resetLanguage = (bool(int(resetLanguageonRestart[0][0])) if resetLanguageonRestart else True)
 
+		if self.platform.window_size:
+			Window.size = self.platform.window_size
 		self.screen_adjustments()
 		self.screen = Builder.load_file("layout.kv")
 
@@ -83,8 +63,9 @@ class CustomerSurveyApp(MDApp): # <- main class
 		self.icon = r'assets/app_icon.png'
 		dropdown_options = self.dropdown_options()
 		self.surveyRatingDropdown = self.dropdown_generator(dropdown_options["rating"], "survey")
-		self.surveyLanguageDropdown = self.dropdown_generator(dropdown_options["surveyLanguage"], "survey")
-		self.adminLanguageDropdown = self.dropdown_generator(dropdown_options["adminLanguage"], "admin")
+		self.surveySurveyLanguageDropdown = self.dropdown_generator(dropdown_options["surveySurveyLanguage"], "survey")
+		self.adminSurveyLanguageDropdown = self.dropdown_generator(dropdown_options["adminSurveyLanguage"], "survey")
+		self.adminLanguageDropdown = self.dropdown_generator(dropdown_options["adminAdminLanguage"], "admin")
 		self.adminThemeDropdown = self.dropdown_generator(dropdown_options["theme"], "admin")
 		if not self.database.password:
 			self.screen.children[0].children[1].current = "adminScreen"
@@ -119,12 +100,17 @@ class CustomerSurveyApp(MDApp): # <- main class
 				],
 				"context": "surveyRatingDropdown"
 			},
-			"surveyLanguage":{
+			"surveySurveyLanguage":{
 				"options": [{"icon": "translate", "option": l} for l in self.text.available("survey")],
-				"fields": ["surveyLanguageSelection"],
-				"context": "surveyLanguageDropdown"
+				"fields": ["surveySurveyLanguageSelection"],
+				"context": "surveySurveyLanguageDropdown"
 			},
-			"adminLanguage":{
+			"adminSurveyLanguage":{
+				"options": [{"icon": "translate", "option": l} for l in self.text.available("survey")],
+				"fields": ["adminSurveyLanguageSelection"],
+				"context": "adminSurveyLanguageDropdown"
+			},
+			"adminAdminLanguage":{
 				"options": [{"icon": "translate", "option": l} for l in self.text.available("admin")],
 				"fields": ["adminLanguageSelection"],
 				"context": "adminLanguageDropdown"
@@ -296,18 +282,16 @@ class CustomerSurveyApp(MDApp): # <- main class
 		return str(value)
 
 	def export(self, type="rtf"):
+		now = datetime.now()
+		timestamp = now.strftime("%Y-%m-%d_%H-%M")
 		if type=="rtf":
-			if not self.database.rtf(self.text.adminLanguage):
-				self.notif(f"{self.text.admin('rtfFail')} {self.database.status}")
-				return
-			self.notif(f"{self.text.admin('rtfSuccess')} {self.database.status}")
-			return
+			content = self.database.rtf(self.text.adminLanguage)
+			success = self.platform.fileExport(f"CustomerSurvey_{timestamp}.rtf", content)
+			self.notif(f"{self.text.admin('rtfSuccess' if success['success'] else 'rtfFail')} {success['return']}")
 		elif type=="csv":
-			if not self.database.csv():
-				self.notif(f"{self.text.admin('csvFail')} {self.database.status}")
-				return
-			self.notif(f"{self.text.admin('csvSuccess')} {self.database.status}")
-			return
+			content = self.database.csv()
+			success = self.platform.fileExport(f"CustomerSurvey_{timestamp}.csv", content)
+			self.notif(f"{self.text.admin('csvSuccess' if success['success'] else 'csvFail')} {success['return']}")
 
 	def on_stop(self):
 		#without this, app will not exit even if the window is closed
