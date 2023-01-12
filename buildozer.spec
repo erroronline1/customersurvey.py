@@ -16,7 +16,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
 # (list) List of inclusions using pattern matching
-#source.include_patterns = assets/*,images/*.png
+#source.include_patterns = assets/*
 
 # (list) Source files to exclude (let empty to not exclude anything)
 source.exclude_exts = spec,.gitignore,md,db
@@ -26,7 +26,7 @@ source.exclude_dirs = __pycache__,.git,bin,.buildozer
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'
-#source.exclude_patterns = license,images/*/*.jpg
+source.exclude_patterns = license,images/*
 
 # (str) Application versioning (method 1)
 # version = 0.1
