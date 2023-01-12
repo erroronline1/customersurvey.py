@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 from language import Language
-import csv
-from datetime import datetime
 
 class DataBase():
 	tableFields = {
@@ -11,8 +9,7 @@ class DataBase():
 	}
 	password = ""
 	status = ""
-	def __init__(self, db, exportpath = None):
-		self.exportPath = exportpath
+	def __init__(self, db):
 		# tries to establish connection, creates on fail.
 		try:
 			self.connection = sqlite3.connect(db)
@@ -106,30 +103,23 @@ class DataBase():
 		return True
 
 	def csv(self):
-		try:
-			now = datetime.now()
-			timestamp = now.strftime("%Y-%m-%d_%H-%M")
-			with open(f"{self.exportPath}_{timestamp}.csv", 'w', newline='') as csvfile:
-				writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-				# add reduced header
-				writer.writerow('"'+str(column)+'"' for column in self.tableFields['CS'])
-
-				cursor = self.connection.cursor()
-				cursor.execute("SELECT * FROM CS;")
-				result = cursor.fetchall()
-				if result is not None:
-					for row in result:
-						output = []
-						for column in row:
-							output.append(column)
-						writer.writerow('"'+str(c)+'"' for c in output)
-			csvfile.close()
-			self.status = self.exportPath + ".csv"
-			return True
-		except Exception as error:
-			self.status = error
-			print(error)
-			return False
+		quote = '"'
+		delimiter = ";"
+		output = ""
+		for column in self.tableFields['CS']:
+			output += f'{quote}{str(column)}{quote}' if quote else str(column)
+			output += delimiter
+		output = output[:-1] + "\n"
+		cursor = self.connection.cursor()
+		cursor.execute("SELECT * FROM CS;")
+		result = cursor.fetchall()
+		if result is not None:
+			for row in result:
+				for column in row:
+					output += f'{quote}{str(column)}{quote}' if quote else str(column)
+					output += delimiter
+				output = output[:-1] + "\n"
+		return output
 
 	def rtf(self, language):
 		# create a report
@@ -183,13 +173,4 @@ class DataBase():
 					output += f"{detail}: {rating[r[3+i]]} / " if r[3+i] != None else ""
 				output += f"{rtfTextInput[1]}: {rating[r[2]]} "
 		output +="}"
-		try:
-			now = datetime.now()
-			timestamp = now.strftime("%Y-%m-%d_%H-%M")
-			with open(f"{self.exportPath}_{timestamp}.rtf", 'w', newline = '') as rtfFile:
-				rtfFile.write(output)
-			self.status = self.exportPath + ".rtf"
-			return True
-		except Exception as error:
-			self.status = error
-			return False
+		return output
