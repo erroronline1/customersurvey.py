@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
-
 from kivy import platform
 from pathlib import Path
 import os
 import shutil
-#if platform=="android":
-#	from android.permissions import Permission, request_permissions, check_permission
-#	from android.storage import app_storage_path
-#	from androidstorage4kivy import SharedStorage
 
 class WinShared():
 	#mimics androidstorage4kivy SharedStorage to just have one super handling method for files
@@ -50,7 +45,7 @@ class platform_handler():
 	def fileExport(self, name, raw_content):
 		try:
 			temp_file=os.path.join(self.app_dir, name)
-			with open(temp_file, 'w', newline='') as tfile:
+			with open(temp_file, 'w', newline='', encoding="latin-1") as tfile:
 				tfile.write(raw_content)
 			self.file.copy_to_shared(temp_file, collection = None, filepath = name if not self.shared_dir else os.path.join(self.shared_dir, name))
 			os.remove(temp_file)
