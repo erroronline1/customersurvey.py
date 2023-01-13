@@ -19,24 +19,24 @@ class Language():
 			"welcomeLabel": {
 				"english": "How satisfied are you with us?",
 				"deutsch": "Wie zufrieden sind Sie mit uns?",
-				"русский": "Насколько вы довольны нами?",
+				"русский": "Насколько Вы довольны нами?",
 			},
 
 			"missingRateNotif":{
 				"english": "Please provide you general opinion :)",
 				"deutsch": "Bitte geben Sie ihren Gesamteindruck an :)",
-				"русский": "Пожалуйста, укажите ваше общее впечатление :)",
+				"русский": "Пожалуйста укажите Ваше общее впечатление :)",
 			},
 
 			"encouragementLabel": {
 				"english": "Thank you for your opinion!",
 				"deutsch": "Danke für Ihre Meinung!",
-				"русский": "Спасибо за ваше мнение!",
+				"русский": "Спасибо за Ваше мнение!",
 			},
 			"encouragementText": {
 				"english": "We would be glad if you take a little more of your time. Do you mind answering a few more questions? Of course all statements are optional!",
 				"deutsch": "Wir freuen uns, wenn Sie noch einen kleinen Moment Zeit für uns haben. Beantworten Sie uns noch ein paar Fragen? Alle Angaben sind selbstverständlich freiwillig!",
-				"русский": "Мы будем рады, если вы уделите нам несколько минут. Не могли бы вы ответить еще на несколько вопросов? Вся информация, разумеется, является добровольной!",
+				"русский": "Мы будем рады, если Вы уделите нам несколько минут. Не могли бы Вы ответить еще на несколько вопросов? Вся информация разумеется является добровольной!",
 			},
 			"encouragementYes": {
 				"english": "yes of course",
@@ -52,7 +52,7 @@ class Language():
 			"detailratingLabel": {
 				"english": "How did you experience your treatment?",
 				"deutsch": "Wie empfanden Sie die Versorgung mit Ihrem Hilfsmittel?",
-				"русский": "Что вы думаете о поставках вашей помощи?",
+				"русский": "Как Вы оцениваете наше обслуживание в процессе изготовления для Вас ортопедического вспомогательного средства?",
 			},
 			"detailratingAvailability": {
 				"english": "Staff availability",
@@ -67,17 +67,17 @@ class Language():
 			"detailratingExpertise": {
 				"english": "Expertise",
 				"deutsch": "Kompetenz",
-				"русский": "Компетенция",
+				"русский": "компетентность",
 			},
 			"detailratingKindness": {
 				"english": "Kindness",
 				"deutsch": "Freundlichkeit",
-				"русский": "Дружелюбие",
+				"русский": "доброжелательность",
 			},
 			"detailratingGood": {
 				"english": "good",
 				"deutsch": "gut",
-				"русский": "отличный",
+				"русский": "хороший",
 			},
 			"detailratingMeh": {
 				"english": "meh",
@@ -104,13 +104,13 @@ class Language():
 			"suggestionLabel": {
 				"english": "How can we improve?",
 				"deutsch": "Was können wir besser machen?",
-				"русский": "Что мы можем сделать лучше?",
+				"русский": "Что по Вашему мнению мы можем улучшить в обслуживании?",
 			},
 
 			"serviceLabel": {
 				"english": "Which aid did you receive?",
 				"deutsch": "Welches Hilfsmittel haben Sie von uns erhalten?",
-				"русский": "Какую помощь вы получили от нас?",
+				"русский": "Какое ортопедическое вспомогательное средство Вы получили в нашей клинике?",
 			},
 
 			"textHint":{
@@ -122,12 +122,12 @@ class Language():
 			"thankyouLabel": {
 				"english": "Thank you for your time!",
 				"deutsch": "Vielen Dank für Ihre Zeit!",
-				"русский": "Большое спасибо за уделенное время!",
+				"русский": "Спасибо, что уделили нам время!",
 			},
 			"thankyouRestart": {
 				"english": "restart",
 				"deutsch": "von vorne",
-				"русский": "с фронта",
+				"русский": "сначала",
 			},
 		},
 		"admin": {
