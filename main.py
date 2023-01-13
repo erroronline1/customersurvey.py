@@ -51,6 +51,9 @@ class CustomerSurveyApp(MDApp): # <- main class
 		resetLanguageonRestart = self.database.read(["VALUE"], "SETTING", {"KEY": "resetsurveylanguage"})
 		self.resetLanguage = (bool(int(resetLanguageonRestart[0][0])) if resetLanguageonRestart else True)
 
+		if self.database.has_content("CS"):
+			self.export("csv")
+
 		if self.platform.window_size:
 			Window.size = self.platform.window_size
 		self.screen_adjustments()

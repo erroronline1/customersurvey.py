@@ -86,6 +86,14 @@ class DataBase():
 		self.connection.commit()
 		return True
 
+	def has_content(self,table):
+		cursor = self.connection.cursor()
+		cursor.execute(f"SELECT COUNT(*) FROM {table} WHERE 1;")
+		result = cursor.fetchall()
+		if result is not None and result[0][0]:
+			return True
+		return False
+
 	def sanitize(self, value = "", quotes = True):
 		# sanitary strings to concatenate to sql queries.
 		# if not quotes it probbly is a column key
