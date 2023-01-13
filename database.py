@@ -107,7 +107,8 @@ class DataBase():
 		delimiter = ";"
 		output = ""
 		for column in self.tableFields['CS']:
-			output += f'{quote}{str(column)}{quote}' if quote else str(column)
+			value = str(column).replace('"','""') if quote else str(column)
+			output += f'{quote}{value}{quote}' if quote else value
 			output += delimiter
 		output = output[:-1] + "\n"
 		cursor = self.connection.cursor()
@@ -116,7 +117,8 @@ class DataBase():
 		if result is not None:
 			for row in result:
 				for column in row:
-					output += f'{quote}{str(column)}{quote}' if quote else str(column)
+					value = str(column).replace('"','""') if quote else str(column)
+					output += f'{quote}{value}{quote}' if quote else value
 					output += delimiter
 				output = output[:-1] + "\n"
 		return output
