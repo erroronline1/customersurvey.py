@@ -274,9 +274,9 @@ Eingaben werden ausschließlich lokal auf dem Gerät gespeichert.
 		return tuple(key for key in self.elements[what][random.choice(list(self.elements[what].keys()))])
 	def survey(self, chunk):
 		# returns requested element for survey
-		result = self.elements["survey"].get(chunk)[self.currentSurveyLanguage]
-		return result if result else "This content snippet has not been declared yet"
+		result = self.elements["survey"].get(chunk)
+		return result[self.currentSurveyLanguage] if result else "This content snippet has not been declared yet"
 	def admin(self, chunk):
 		# returns requested element for admin
-		result = self.elements["admin"].get(chunk)[self.adminLanguage]
-		return result if result else "This content snippet has not been declared yet"
+		result = self.elements["admin"].get(chunk)
+		return result[self.adminLanguage] if result else "This content snippet has not been declared yet"
