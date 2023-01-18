@@ -7,7 +7,7 @@ title = CustomerSurvey
 package.name = customerSurvey
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.test
+package.domain = org.erroronlineone
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -22,7 +22,7 @@ source.include_exts = py,png,jpg,kv,atlas
 source.exclude_exts = spec,.gitignore,md,db
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-source.exclude_dirs = __pycache__,.git,bin,.buildozer
+source.exclude_dirs = __pycache__,.git,bin,.buildozer,images
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'
