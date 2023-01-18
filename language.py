@@ -77,17 +77,17 @@ class Language():
 			"detailratingGood": {
 				"english": "good",
 				"deutsch": "gut",
-				"русский": "хороший",
+				"русский": "хорошо",
 			},
 			"detailratingMeh": {
 				"english": "meh",
 				"deutsch": "so la la",
-				"русский": "посредственный",
+				"русский": "посредственно",
 			},
 			"detailratingBad": {
 				"english": "bad",
 				"deutsch": "schlecht",
-				"русский": "плохой",
+				"русский": "плохо",
 			},
 			"detailratingSelect": {
 				"english": "rate",
