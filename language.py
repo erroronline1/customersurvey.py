@@ -34,7 +34,7 @@ class Language():
 				"русский": "Спасибо за Ваше мнение!",
 			},
 			"encouragementText": {
-				"english": "We would be glad if you take a little more of your time. Do you mind answering a few more questions? Of course all statements are optional!",
+				"english": "We would be delighted if you could spare a few minutes for us. Do you mind answering a few more questions? Of course all statements are optional!",
 				"deutsch": "Wir freuen uns, wenn Sie noch einen kleinen Moment Zeit für uns haben. Beantworten Sie uns noch ein paar Fragen? Alle Angaben sind selbstverständlich freiwillig!",
 				"русский": "Мы будем рады, если Вы уделите нам несколько минут. Не могли бы Вы ответить еще на несколько вопросов? Вся информация разумеется является добровольной!",
 			},
@@ -204,19 +204,19 @@ class Language():
 
 			"adminTimeout": {
 				"english": "Timeout",
-				"deutsch": "Ablaufzeit"
+				"deutsch": "Zeitablauf"
 			},
 			"adminThemeSelectionLabel":{
-				"english": "theme",
-				"deutsch": "Farbe"
+				"english": "color scheme",
+				"deutsch": "Farbschema"
 			},
 			"surveyLanguageSelectionLabel":{
-				"english": "default survey langauge",
+				"english": "default survey language",
 				"deutsch": "Standardsprache Umfrage"
 			},
 			"surveyLanguageResetLabel":{
-				"english": "default langauge on restart",
-				"deutsch": "Standardsprache beim Neubeginn"
+				"english": "default language on restart",
+				"deutsch": "Standardsprache bei Neustart"
 			},
 			"adminLanguageSelectionLabel":{
 				"english": "default admin language",
@@ -265,7 +265,7 @@ Eingaben werden ausschließlich lokal auf dem Gerät gespeichert.
 		}
 	}
 	def __init__(self, surveylanguage = None, adminlanguage = None):
-		# define selected langauge, defaults to first available language
+		# define selected language, defaults to first available language
 		self.defaultSurveyLanguage = surveylanguage if surveylanguage in self.available("survey") else self.available("survey")[0]
 		self.currentSurveyLanguage = self.defaultSurveyLanguage
 		self.adminLanguage = adminlanguage if adminlanguage in self.available("admin") else self.available("admin")[0]
