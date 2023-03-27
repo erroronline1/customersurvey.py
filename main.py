@@ -180,6 +180,7 @@ class CustomerSurveyApp(MDApp): # <- main class
 
 	def cancel_confirm_dialog_handler(self, *btnObj):
 		self.dialog.dismiss()
+		self.dialog = None
 		if btnObj[0].text == self.text.admin("confirmReset"):
 			self.database.clear(["CS", "SETTING"])
 			self.notif(self.text.admin("resetMessage"))
