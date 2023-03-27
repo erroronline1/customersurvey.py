@@ -2,7 +2,10 @@
 
 my [original customer survey](https://github.com/erroronline1/customersurvey) for wamp was all fun and games until the battery of the cheap windows tablet started to inflate. now, replacing a cheap windows-tablet turned out to be nearly impossible in 2023 from a german public service point of view.
 
-this is now my first somewhat successful compiled android app usind python3, [kivy](https://kivy.org/) and [kivyMD](https://kivymd.readthedocs.io) that makes it possible to use a cheap android tablet instead.
+this is now my first somewhat successful compiled android app using python3, [kivy](https://kivy.org/) and [kivyMD](https://kivymd.readthedocs.io) that makes it possible to use a cheap android tablet instead.
+
+## download a working apk
+<a href="https://drive.google.com/file/d/15s_p4JuECNqlcLo_-L4UMzBEHjGEeXj9/view?usp=share_link" target="_blank">>>> link to google drive <<<</a>
 
 ## app-features
 
@@ -42,7 +45,7 @@ most settings take effect only after restarting the app.
 
 sorry for the excitement, but i'm just freaking glad it works w/o needing to learn java. i'm not totally sure about every buildozer.spec setting, but it works now.
 
-tested on Samsung Galaxy S9 @ Android10, Samsumg Galaxy S10 @ Android12
+tested on Samsung Galaxy S9 @ Android10, Samsung Galaxy S10 @ Android12, Lenovo M10 @ Android 11
 
 ## resources
 
