@@ -22,6 +22,8 @@ from language import Language
 from platformhandler import platform_handler
 import database
 
+Window.softinput_mode = "below_target"
+
 class IconListItem(OneLineIconListItem):
 	icon = StringProperty()
 
